@@ -114,21 +114,25 @@ class HeightMap {
       const expandBasin = (basin: LocationSet, frontier: LocationSet): LocationSet => {
         if (frontier.size === 0) return basin
 
-        const newFrontier = frontier.values().flatMap(borderLocation => {
-          const borderValue = this.data[borderLocation.row][borderLocation.col]
+        const newFrontier = new LocationSet(
+          frontier.values()
+            .flatMap(borderLocation => {
+              const borderValue = this.data[borderLocation.row][borderLocation.col]
 
-          return this.neighbors(borderLocation)
-            .filter(neighborLocation => {
-              const neighborValue = this.data[neighborLocation.row][neighborLocation.col]
+              return this.neighbors(borderLocation)
+                .filter(neighborLocation => {
+                  const neighborValue = this.data[neighborLocation.row][neighborLocation.col]
 
-              return neighborValue !== 9
-                && neighborValue > borderValue
-                && !basin.has(neighborLocation)
+                  return neighborValue !== 9
+                    && neighborValue > borderValue
+                    && !basin.has(neighborLocation)
+                })
             })
-        })
+        )
+
         newFrontier.forEach(location => basin.add(location))
 
-        return expandBasin(basin, new LocationSet(newFrontier))
+        return expandBasin(basin, newFrontier)
       }
 
       return expandBasin(new LocationSet([lowPoint]), new LocationSet([lowPoint]))
