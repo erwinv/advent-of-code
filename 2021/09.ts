@@ -15,103 +15,124 @@ export function parseInput(s: string): Input[] {
     })
 }
 
-type Coordinates = [row: number, col: number]
+abstract class MappedSet<T, U> {
+  abstract map(value: T): U
+  abstract inverseMap(value: U): T
+  data: Set<U>
+
+  constructor(values: Iterable<T> = []) {
+    this.data = new Set([...values].map(this.map))
+  }
+
+  has(value: T) {
+    return this.data.has(this.map(value))
+  }
+
+  add(value: T) {
+    return this.data.add(this.map(value))
+  }
+
+  get size() { return this.data.size }
+
+  values(): T[] {
+    return [...this.data.values()]
+      .map(this.inverseMap)
+  }
+
+  forEach(fn: (value: T) => void) {
+    return this.data
+      .forEach(value => fn(this.inverseMap(value)))
+  }
+}
+
+interface Location {
+  row: number
+  col: number
+}
+
+class LocationSet extends MappedSet<Location, `${number},${number}`> {
+  map(loc: Location) {
+    return `${loc.row},${loc.col}` as const
+  }
+  inverseMap(str: `${number},${number}`) {
+    const [row, col] = str.split(',').map(_.toNumber)
+    return {row, col} as Location
+  }
+}
 
 class HeightMap {
-  lowPoints: Coordinates[] = []
-  summits: Coordinates[] = []
-  riskLevels: number[] = []
   numRows: number
   numCols: number
+  lowPoints: Location[] = []
+  riskLevels: number[] = []
 
   constructor(public data: number[][]) {
     this.numRows = data.length
     this.numCols = data[0].length
+    this.findLowPointsAndRiskLevels()
+  }
 
-    for (const [y, row] of data.entries()) {
-      for (const [x, cell] of row.entries()) {
-        if (cell === 9) {
-          this.summits.push([y, x])
-          continue
-        }
+  neighbors({row, col}: Location): Location[] {
+    const top = {row: row-1, col}
+    const bot = {row: row+1, col}
+    const left = {row, col: col-1}
+    const right = {row, col: col+1}
 
-        const neighbors = this.getNeighbors([y, x])
-          .map(([y, x]) => this.data[y][x])
+    const isTopRow = row === 0
+    const isBotRow = row === this.numRows - 1
+    const isLeftEdge = col === 0
+    const isRightEdge = col === this.numCols - 1
 
-        if (neighbors.every(neighbor => cell < neighbor)) {
-          this.lowPoints.push([y, x])
-          this.riskLevels.push(cell + 1)
+    const neighbors = [] as Location[]
+    if (!isTopRow) neighbors.push(top)
+    if (!isBotRow) neighbors.push(bot)
+    if (!isLeftEdge) neighbors.push(left)
+    if (!isRightEdge) neighbors.push(right)
+
+    return neighbors
+  }
+
+  findLowPointsAndRiskLevels() {
+    for (const [i, row] of this.data.entries()) {
+      for (const [j, value] of row.entries()) {
+        if (value === 9) continue
+
+        const isLowPoint = this.neighbors({ row: i, col: j})
+          .map(({ row, col }) => this.data[row][col])
+          .every(neighborValue => neighborValue > value)
+
+        if (isLowPoint) {
+          this.lowPoints.push({row: i, col: j})
+          this.riskLevels.push(value + 1)
         }
       }
     }
   }
 
-  getNeighbors(coordinates: Coordinates) {
-    const [y, x] = coordinates
-
-    const neighbors = [] as Coordinates[]
-    if (y > 0) neighbors.push([y-1, x])
-    if (x > 0) neighbors.push([y, x-1])
-    if (y < this.numRows - 1)
-      neighbors.push([y+1, x])
-    if (x < this.numCols - 1)
-      neighbors.push([y, x+1])
-
-    return neighbors
-  }
-
-  get basins() {
+  get basins(): LocationSet[] {
     return this.lowPoints.map(lowPoint => {
-      const expandBasin = (basin: CoordinatesSet, border: CoordinatesSet): CoordinatesSet => {
-        if (border.size === 0) return basin
+      const expandBasin = (basin: LocationSet, frontier: LocationSet): LocationSet => {
+        if (frontier.size === 0) return basin
 
-        const frontier = CoordinatesSet.fromCoordinates(
-          border.toCoordinates()
-            .flatMap(([y, x]) => {
-              const thisHeight = this.data[y][x]
-              return this.getNeighbors([y, x])
-                .filter(([y, x]) => {
-                  return !basin.hasCoordinates([y, x])
-                    && this.data[y][x] > thisHeight
-                    && this.data[y][x] !== 9
-                })
+        const newFrontier = frontier.values().flatMap(borderLocation => {
+          const borderValue = this.data[borderLocation.row][borderLocation.col]
+
+          return this.neighbors(borderLocation)
+            .filter(neighborLocation => {
+              const neighborValue = this.data[neighborLocation.row][neighborLocation.col]
+
+              return neighborValue !== 9
+                && neighborValue > borderValue
+                && !basin.has(neighborLocation)
             })
-          )
+        })
+        newFrontier.forEach(location => basin.add(location))
 
-        border.forEach(x => basin.add(x))
-
-        return expandBasin(basin, frontier)
+        return expandBasin(basin, new LocationSet(newFrontier))
       }
 
-      const initialBasin = new CoordinatesSet()
-      const initialBorder = new CoordinatesSet([toLocation(lowPoint)])
-
-      return expandBasin(initialBasin, initialBorder)
+      return expandBasin(new LocationSet([lowPoint]), new LocationSet([lowPoint]))
     })
-  }
-}
-
-const toCoordinates = (location: string) => location.split(',').map(_.toNumber) as Coordinates
-const toLocation = (coordinates: Coordinates) => `${coordinates[0]},${coordinates[1]}` as const
-
-class CoordinatesSet extends Set<`${number},${number}`> {
-  constructor(x?: `${number},${number}`[]) {
-    super(x)
-  }
-
-  addCoordinates(coordinates: Coordinates) {
-    return this.add(toLocation(coordinates))
-  }
-  hasCoordinates(coordinates: Coordinates) {
-    return this.has(toLocation(coordinates))
-  }
-  toCoordinates() {
-    return Array.from(this).map(toCoordinates)
-  }
-  static fromCoordinates(x: Coordinates[]) {
-    const ret = new CoordinatesSet()
-    x.forEach(x => ret.addCoordinates(x))
-    return ret
   }
 }
 
@@ -123,7 +144,7 @@ export function part1(data: Input[]) {
 export function part2(data: Input[]) {
   const grid = new HeightMap(data)
   return _.chain(grid.basins)
-    .map(basin => basin.toCoordinates().length)
+    .map(basin => basin.size)
     .orderBy(_.identity, 'desc')
     .take(3)
     .reduce(_.multiply)
