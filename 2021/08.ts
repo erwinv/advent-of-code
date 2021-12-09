@@ -57,15 +57,14 @@ class SegmentSet extends Set<Segment> {
 }
 
 export function part1(data: Input[]) {
-  return _.chain(data)
+  return data
     .flatMap(({ outputSignals }) => outputSignals)
-    .flatMap(signal => [2, 3, 4, 7].includes(signal.numSegments) ? [signal] : [])
-    .value()
+    .filter(signal => [2, 3, 4, 7].includes(signal.numSegments))
     .length
 }
 
 export function part2(data: Input[]) {
-  return _.chain(data)
+  return data
     .map(({ inputSignals: signals, outputSignals }) => {
       const _1 = signals.find(s => s.numSegments === 2)!
       const _4 = signals.find(s => s.numSegments === 4)!
@@ -91,12 +90,10 @@ export function part2(data: Input[]) {
         [_9, 9],
       ])
 
-      return _.toNumber(
-        outputSignals
-          .map(outputSignal => decoder[`${outputSignal}`])
-          .join('')
-      )
+      return outputSignals
+        .map(outputSignal => decoder[`${outputSignal}`])
+        .join('')
     })
+    .map(_.toNumber)
     .reduce(_.add)
-    .value()
 }
