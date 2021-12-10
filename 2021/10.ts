@@ -28,7 +28,7 @@ const OPENING_DELIMITERS = ['(', '[', '{', '<'] as const
 type ClosingDelimiter = typeof CLOSING_DELIMITERS[number]
 type OpeningDelimiter = typeof OPENING_DELIMITERS[number]
 
-const CLOSING_DELIMETER_MATCH: Record<ClosingDelimiter, OpeningDelimiter> = {
+const CLOSING_DELIMITER_MATCH: Record<ClosingDelimiter, OpeningDelimiter> = {
   ')': '(',
   ']': '[',
   '}': '{',
@@ -60,28 +60,27 @@ function isClosingDelimiter(delimiter: ChunkDelimiter): delimiter is ClosingDeli
 
 export function part1(data: Input[]) {
   return data.flatMap(line => {
-    const {syntaxError, stack} = line.reduce(({syntaxError, stack}, delimiter) => {
-      if (syntaxError) return {syntaxError, stack}
+    const findIllegalDelimiter = (stack: ChunkDelimiter[], remaining: ChunkDelimiter[]): ClosingDelimiter | null => {
+      const next = remaining.shift()
+      if (!next) return null
 
-      if (!isClosingDelimiter(delimiter)) {
-        stack.push(delimiter)
-        return {syntaxError, stack}
-      }
+      if (isClosingDelimiter(next)) {
+        if (CLOSING_DELIMITER_MATCH[next] !== _.last(stack)) {
+          return next
+        }
 
-      if (CLOSING_DELIMETER_MATCH[delimiter] === _.last(stack)) {
         stack.pop()
-        return {syntaxError, stack}
+      } else {
+        stack.push(next)
       }
 
-      stack.push(delimiter)
-      return {syntaxError: true, stack}
-    }, {
-      syntaxError: false,
-      stack: [] as ChunkDelimiter[]
-    })
-    if (!syntaxError) return []
+      return findIllegalDelimiter(stack, remaining)
+    }
 
-    const score = SYNTAX_ERROR_SCORE[_.last(stack) as ClosingDelimiter]
+    const illegalClosingDelimiter = findIllegalDelimiter([], [...line])
+    if (!illegalClosingDelimiter) return []
+
+    const score = SYNTAX_ERROR_SCORE[illegalClosingDelimiter]
     return [score]
   })
   .reduce(_.add)
@@ -89,29 +88,29 @@ export function part1(data: Input[]) {
 
 export function part2(data: Input[]) {
   const scores = data.flatMap(line => {
-    const {syntaxError, stack} = line.reduce(({syntaxError, stack}, delimiter) => {
-      if (syntaxError) return {syntaxError, stack}
-
-      if (!isClosingDelimiter(delimiter)) {
-        stack.push(delimiter)
-        return {syntaxError, stack}
+    const findCompletionString = (stack: ChunkDelimiter[], remaining: ChunkDelimiter[]): ClosingDelimiter[] => {
+      const next = remaining.shift()
+      if (!next) {
+        return stack.reverse()
+          .map(openingDelimiter => OPENING_DELIMITER_MATCH[openingDelimiter as OpeningDelimiter])
       }
 
-      if (CLOSING_DELIMETER_MATCH[delimiter] === _.last(stack)) {
+      if (isClosingDelimiter(next)) {
+        if (CLOSING_DELIMITER_MATCH[next] !== _.last(stack)) {
+          return []
+        }
+
         stack.pop()
-        return {syntaxError, stack}
+      } else {
+        stack.push(next)
       }
 
-      stack.push(delimiter)
-      return {syntaxError: true, stack}
-    }, {
-      syntaxError: false,
-      stack: [] as ChunkDelimiter[]
-    })
-    if (syntaxError || stack.length === 0) return []
+      return findCompletionString(stack, remaining)
+    }
 
-    const completionString = stack.reverse()
-      .map(openDelimiter => OPENING_DELIMITER_MATCH[openDelimiter as OpeningDelimiter])
+    const completionString = findCompletionString([], [...line])
+    if (completionString.length === 0) return []
+
     const completionStringScore = completionString
       .map(completionChar => COMPLETION_CHARACTER_SCORE[completionChar])
       .reduce((totalScore, score) => totalScore * 5 + score, 0)
