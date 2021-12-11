@@ -15,7 +15,7 @@ export function parseInput(s: string): Input[] {
     })
 }
 
-abstract class MappedSet<T, U> {
+export abstract class MappedSet<T, U> {
   abstract map(value: T): U
   abstract inverseMap(value: U): T
   data: Set<U>
