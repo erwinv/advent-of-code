@@ -43,6 +43,12 @@ export abstract class MappedSet<T, U> {
     return this.data
       .forEach(value => fn(this.inverseMap(value)))
   }
+
+  *[Symbol.iterator]() {
+    for (const el of this.data) {
+      yield this.inverseMap(el)
+    }
+  }
 }
 
 interface Location {

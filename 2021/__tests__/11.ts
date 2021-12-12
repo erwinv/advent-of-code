@@ -2,8 +2,8 @@ import { parseInput, Input, part1, part2 } from '../11'
 import { getInput } from '../../api'
 
 let data: Input[]
-const example: Input[] = parseInput(
-`5483143223
+const example: Input[] = parseInput(`
+5483143223
 2745854711
 5264556173
 6141336146
@@ -12,7 +12,8 @@ const example: Input[] = parseInput(
 2176841721
 6882881134
 4846848554
-5283751526`)
+5283751526
+`)
 
 beforeAll(async () => {
   data = parseInput(await getInput('2021', '11'))
