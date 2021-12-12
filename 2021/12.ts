@@ -57,7 +57,7 @@ class Graph {
     }
   }
 
-  findPaths(smallCaveMaxVisit = 1) {
+  findPaths(smallCaveMaxVisit = 1, numSmallCavesWithMaxVisit = 1) {
     if (!this.vertices.has('start') || !this.vertices.has('end')) {
       return
     }
@@ -91,7 +91,7 @@ class Graph {
               .value()
 
             if (smallCaveNumVisitsQuota[neighbor] > smallCaveMaxVisit
-              || _.size(smallCaveNumVisitsQuota) > 1) {
+              || _.size(smallCaveNumVisitsQuota) > numSmallCavesWithMaxVisit) {
               continue
             }
           }
