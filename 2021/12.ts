@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { MappedSet } from './09'
 
 type Vertex = string // 'start' | 'end' | Uppercase<string> | Lowercase<string>
 type Edge = readonly [Vertex, Vertex]
@@ -19,100 +18,83 @@ export function parseInput(s: string): Input[] {
     })
 }
 
-type EdgeStr = `${Vertex}-${Vertex}`
-
-class EdgeSet extends MappedSet<Edge, EdgeStr> {
-  map(edge: Edge): EdgeStr {
-    const [v1, v2] = _.orderBy(edge, _.identity)
-    return `${v1}-${v2}`
-  }
-  inverseMap(edgeStr: EdgeStr): Edge {
-    const [v1, v2] = edgeStr.split('-')
-    return [v1, v2] as const
-  }
-}
+type TraversalCriteria = (nextVertex: Vertex, currentPath: Path) => boolean
 
 class Graph {
-  vertices: Set<Vertex> = new Set()
-  edges: EdgeSet = new EdgeSet()
   vertexNeighbors: Map<Vertex, Set<Vertex>> = new Map()
   paths: Path[] = []
 
   constructor(edges: Edge[]) {
     for (const edge of edges) {
-      this.edges.add(edge)
-
       const [v1, v2] = edge
-      this.vertices.add(v1)
-      this.vertices.add(v2)
-    }
 
-    for (const vertex of this.vertices) {
-      const vertexNeighbors = this.vertexNeighbors.get(vertex) ?? new Set()
-      for (const [v1, v2] of this.edges) {
-        if (v1 === vertex) vertexNeighbors.add(v2)
-        else if (v2 === vertex) vertexNeighbors.add(v1)
-      }
-      this.vertexNeighbors.set(vertex, vertexNeighbors)
+      if (!this.vertexNeighbors.has(v1))
+        this.vertexNeighbors.set(v1, new Set())
+  
+      if (!this.vertexNeighbors.has(v2))
+        this.vertexNeighbors.set(v2, new Set())
+  
+      this.vertexNeighbors.get(v1)!.add(v2)
+      this.vertexNeighbors.get(v2)!.add(v1)
     }
   }
 
-  findPaths(smallCaveMaxVisit = 1, numSmallCavesWithMaxVisit = 1) {
-    if (!this.vertices.has('start') || !this.vertices.has('end')) {
-      return
-    }
-
+  findPaths(traversalCriteria: TraversalCriteria, start: Vertex = 'start', end: Vertex = 'end') {
     const _traverseGraph = (path: Path) => {
       const vertex = _.last(path)!
 
-      if (vertex === 'end') {
+      if (vertex === end) {
         this.paths.push(path)
         return
       }
 
       for (const neighbor of this.vertexNeighbors.get(vertex)!) {
-        if (neighbor === 'start') {
-          continue
+        if (neighbor !== start && traversalCriteria(neighbor, path)) {
+          _traverseGraph([...path, neighbor])
         }
-
-        const isSmallCave = neighbor.toLowerCase() === neighbor
-          && !['start', 'end'].includes(neighbor)
-
-        if (isSmallCave) {
-          if (smallCaveMaxVisit === 1) {
-            if (path.includes(neighbor)) {
-              continue
-            }
-          } else {
-            const smallCaveNumVisitsQuota = _.chain([...path, neighbor])
-              .filter(c => !['start', 'end'].includes(c) && c.toLowerCase() === c)
-              .countBy(_.identity)
-              .pickBy(count => count >= smallCaveMaxVisit)
-              .value()
-
-            if (smallCaveNumVisitsQuota[neighbor] > smallCaveMaxVisit
-              || _.size(smallCaveNumVisitsQuota) > numSmallCavesWithMaxVisit) {
-              continue
-            }
-          }
-        }
-
-        _traverseGraph([...path, neighbor])
       }
     }
 
-    _traverseGraph(['start'])
+    _traverseGraph([start])
   }
+}
+
+function isSmallCave(c: string) {
+  return c.toLowerCase() === c && !['start', 'end'].includes(c)
 }
 
 export function part1(data: Input[]) {
   const graph = new Graph(data)
-  graph.findPaths()
+
+  graph.findPaths((nextCave, currentPath) => {
+    if (!isSmallCave(nextCave)) return true
+
+    return  !currentPath.includes(nextCave)
+  })
+
   return graph.paths.length
 }
 
 export function part2(data: Input[]) {
   const graph = new Graph(data)
-  graph.findPaths(2)
+  graph.findPaths((nextCave, currentPath) => {
+    if (!isSmallCave(nextCave)) return true
+
+    const smallCaveMaxVisits = 2
+
+    const smallCaveNumVisits = _.chain([...currentPath, nextCave])
+      .filter(isSmallCave)
+      .countBy(_.identity)
+      .value()
+
+    const smallCavesWithMaxVisits = _.pickBy(
+      smallCaveNumVisits,
+      n => n === smallCaveMaxVisits
+    )
+
+    return smallCaveNumVisits[nextCave] <= smallCaveMaxVisits
+      && _.size(smallCavesWithMaxVisits) <= 1
+  })
+
   return graph.paths.length
 }
