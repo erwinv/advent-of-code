@@ -68,7 +68,6 @@ export function part1(data: Input[]) {
 
   graph.findPaths((nextCave, currentPath) => {
     if (!isSmallCave(nextCave)) return true
-
     return  !currentPath.includes(nextCave)
   })
 
@@ -77,23 +76,27 @@ export function part1(data: Input[]) {
 
 export function part2(data: Input[]) {
   const graph = new Graph(data)
+
+  const smallCaveMaxVisits = 2
+  const maxNumSmallCavesWithMaxVisits = 1
+
   graph.findPaths((nextCave, currentPath) => {
     if (!isSmallCave(nextCave)) return true
-
-    const smallCaveMaxVisits = 2
 
     const smallCaveNumVisits = _.chain([...currentPath, nextCave])
       .filter(isSmallCave)
       .countBy(_.identity)
       .value()
 
+    if (smallCaveNumVisits[nextCave] > smallCaveMaxVisits)
+      return false
+
     const smallCavesWithMaxVisits = _.pickBy(
       smallCaveNumVisits,
       n => n === smallCaveMaxVisits
     )
 
-    return smallCaveNumVisits[nextCave] <= smallCaveMaxVisits
-      && _.size(smallCavesWithMaxVisits) <= 1
+    return _.size(smallCavesWithMaxVisits) <= maxNumSmallCavesWithMaxVisits
   })
 
   return graph.paths.length
