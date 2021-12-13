@@ -27,37 +27,36 @@ export function parseInput(s: string): Input[] {
 
 class Grid {
   cells: boolean[][]
-  maxX: number
-  maxY: number
 
   constructor(points: Coords[]) {
-    this.maxX = _.max(points.map(([x]) => x))!
-    this.maxY = _.max(points.map(([, y]) => y))!
-    this.cells = _.range(this.maxX + 1).map(() => _.range(this.maxY + 1).map(() => false))
+    const maxX = _.max(points.map(([x]) => x))!
+    const maxY = _.max(points.map(([, y]) => y))!
+    this.cells = _.range(maxX + 1).map(() => _.range(maxY + 1).map(() => false))
     for (const [x, y] of points) {
       this.cells[x][y] = true
     }
   }
 
   fold(fold: Fold) {
+    const maxX = this.cells.length - 1
+    const maxY = this.cells[0].length - 1
+
     if (fold.along === 'x') {
-      for (const x_ of _.range(fold.x + 1, this.maxX + 1)) {
+      for (const x_ of _.range(fold.x + 1, maxX + 1)) {
         const _x = fold.x - (x_ - fold.x)
-        for (const y of _.range(0, this.maxY + 1)) {
+        for (const y of _.range(0, maxY + 1)) {
           this.cells[_x][y] ||= this.cells[x_][y]
         }
       }
       this.cells.splice(fold.x)
-      this.maxX = fold.x - 1
     } else {
-      for (const y_ of _.range(fold.y + 1, this.maxY + 1)) {
+      for (const y_ of _.range(fold.y + 1, maxY + 1)) {
         const _y = fold.y - (y_ - fold.y)
-        for (const x of _.range(0, this.maxX + 1)) {
+        for (const x of _.range(0, maxX + 1)) {
           this.cells[x][_y] ||= this.cells[x][y_]
         }
       }
       this.cells.forEach(ys => ys.splice(fold.y))
-      this.maxY = fold.y - 1
     }
   }
 
