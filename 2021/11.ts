@@ -145,15 +145,17 @@ export function part1(data: Input[]) {
 
 export function part2(data: Input[]) {
   const grid = new Grid(data)
-  console.info(`before any steps:\n${grid.toJSON()}`)
+  //console.info(`before any steps:\n${grid.toJSON()}`)
 
   let step = 0
   while (true) {
     step++
     const synchronizedFlash = grid.step()
+    /*
     if (step < 10 || step % 10 === 0 || synchronizedFlash) {
       console.info(`after step ${step}:\n${grid.toJSON()}`)
     }
+    */
     if (synchronizedFlash) return step
   }
 }
