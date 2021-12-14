@@ -1,7 +1,7 @@
 import { parseInput, Input, part1, part2 } from '../14'
-import { getInput } from '../../api'
+// import { getInput } from '../../api'
 
-let data: Input
+// let data: Input
 const example: Input = parseInput(`
 NNCB
 
@@ -24,19 +24,16 @@ CN -> C
 `)
 
 beforeAll(async () => {
-  data = parseInput(await getInput('2021', '14'))
+  // data = parseInput(await getInput('2021', '14'))
 })
 
 test('2021 day 14 part 1', () => {
   expect(part1(example)).toBe(1588)
-  expect(part1(data)).toMatchInlineSnapshot(`2584`)
+  // expect(part1(data)).toMatchInlineSnapshot(`2584`)
 })
 
 test('2021 day 14 part 2', () => {
-  // this ain't happening, it's CPU-bound and I don't have the time/patience to write multithreaded JS
-  // will switch to Scala for this
-
-  // expect(part2(example)).toBe(2188189693529)
-  // expect(part2(data)).toMatchInlineSnapshot()
+  expect(part2(example)).toBe(2188189693529)
+  // expect(part2(data)).toMatchInlineSnapshot(`3816397135460`)
 })
 

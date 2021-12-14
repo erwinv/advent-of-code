@@ -50,3 +50,15 @@ export function slidingPairs<T>(xs: T[]): Iterable<readonly [T, T]> {
 
   return generator()
 }
+
+export function pairPermutations<T>(xs: T[]): Iterable<readonly [T, T]> {
+  const generator = function*() {
+    for (const x1 of xs) {
+      for (const x2 of xs) {
+        yield [x1, x2] as const
+      }
+    }
+  }
+
+  return generator()
+}
