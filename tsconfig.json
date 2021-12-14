@@ -16,8 +16,7 @@
     "skipLibCheck": true
   },
   "include": [
-    "api.ts",
-    "template.ts",
+    "*.ts",
     "2021/**/*",
     "test/**/*"
   ],

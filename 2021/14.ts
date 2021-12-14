@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import { slidingPairs } from '../lib'
 
 const ALPHABET = [
   'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
@@ -6,69 +7,62 @@ const ALPHABET = [
   'u', 'v', 'w', 'x', 'y', 'z'
 ] as const
 type letter = typeof ALPHABET[number]
-
 type Element = Uppercase<letter>
 type Polymer = Element[]
-type PairInsertionRule = readonly [`${Element}${Element}`, Element]
+type Pair = `${Element}${Element}`
 
-export type Input = Polymer | PairInsertionRule
-
-export function parseInput(s: string): Input[] {
-  const INPUT1 = /([A-Z][A-Z]) -> ([A-Z])/
-  const INPUT2 = /([A-Z]+)/
-  return s.split(/\r?\n/)
-    .flatMap(line => {
-      const match = INPUT1.exec(line) ?? INPUT2.exec(line)
-      if (!match) return []
-      return [
-        INPUT1.test(line)
-          ? [match[1], match[2]] as PairInsertionRule
-          : match[1].split('') as Polymer
-      ]
-    })
+export type Input = {
+  template: Polymer
+  insertionRules: Map<Pair, Element>
 }
 
-const _slidingWindow = <T>(_xs: T[], windowSize = 2, slidingOffset = 1): T[][] => {
-  const xs = [..._xs]
-  return [...function*() {
-    let i = 0
-    while (true) {
-      const window = xs.slice(i, i + windowSize)
-      if (window.length !== windowSize) {
-        break
-      }
-      yield window
-      i += slidingOffset
+export function parseInput(s: string): Input {
+  const TEMPLATE = /([A-Z]{3,})/
+  const INSERTION_RULE = /([A-Z][A-Z]) -> ([A-Z])/
+
+  const template = [] as Polymer
+  const insertionRules = new Map() as Map<Pair, Element>
+
+  for (const line of s.split(/\r?\n/)) {
+    const insertionRuleMatch = INSERTION_RULE.exec(line)
+    if (insertionRuleMatch) {
+      const pair = insertionRuleMatch[1] as Pair
+      const child = insertionRuleMatch[2] as Element
+      insertionRules.set(pair, child)
+      continue
     }
-  }()]
+
+    const templateMatch = TEMPLATE.exec(line)
+    if (templateMatch) {
+      template.push(...templateMatch[1].split('') as Polymer)
+      continue
+    }
+  }
+
+  return {template, insertionRules}
 }
 
-function polymerize(template: Polymer, rules: PairInsertionRules, steps: number): Polymer {
+
+function polymerize(template: Polymer, rules: Input['insertionRules'], steps: number): Polymer {
   if (steps === 0) return template
 
   const polymer = [...template]
+  let i = 0
   let insertedOffset = 0
-  for (const [i, _pair] of _slidingWindow(template).entries()) {
-    const pair = _pair.join('') as `${Element}${Element}`
-    const insert = rules[pair]
-    if (insert) {
-      polymer.splice(i + insertedOffset + 1, 0, insert)
+  for (const [e1, e2] of slidingPairs(template)) {
+    const child = rules.get(`${e1}${e2}`)
+    if (child) {
+      polymer.splice(i + insertedOffset + 1, 0, child)
       insertedOffset++
     }
+    i++
   }
 
   return polymerize(polymer, rules, steps - 1)
 }
 
-type PairInsertionRules = Partial<Record<`${Element}${Element}`, Element>>
-
-const isPolymer = (x: Input): x is Polymer => x.length > 2
-
-export function part1(data: Input[], steps = 10) {
-  const [[polymerTemplate], _pairInsertionRules] = _.partition(data, isPolymer)
-  const pairInsertionRules = Object.fromEntries(_pairInsertionRules) as PairInsertionRules
-
-  const polymer = polymerize(polymerTemplate, pairInsertionRules, steps)
+export function part1({template, insertionRules}: Input, steps = 10) {
+  const polymer = polymerize(template, insertionRules, steps)
 
   const elementCountsDesc = _.chain(polymer)
     .countBy(_.identity)
@@ -80,6 +74,6 @@ export function part1(data: Input[], steps = 10) {
   return _.first(elementCountsDesc)!.count - _.last(elementCountsDesc)!.count
 }
 
-export function part2(data: Input[]) {
-  return part1(data, 40)
+export function part2(input: Input) {
+  return part1(input, 40)
 }

@@ -55,6 +55,6 @@ test('2021 day 12 part 2', () => {
   expect(part2(examples[0])).toBe(36)
   expect(part2(examples[1])).toBe(103)
   expect(part2(examples[2])).toBe(3509)
-  expect(part2(data)).toMatchInlineSnapshot(`116692`)
+  // expect(part2(data)).toMatchInlineSnapshot(`116692`)
 })
 

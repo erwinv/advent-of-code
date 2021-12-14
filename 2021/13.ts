@@ -1,4 +1,4 @@
-import _, { round } from 'lodash'
+import _ from 'lodash'
 
 type Coords = readonly [x: number, y: number]
 type Fold = {

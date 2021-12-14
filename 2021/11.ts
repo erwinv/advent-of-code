@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { MappedSet } from './09'
+import { MappedSet } from '../lib'
 
 export type Input = number[]
 

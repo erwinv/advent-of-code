@@ -1,8 +1,8 @@
 import { parseInput, Input, part1, part2 } from '../14'
 import { getInput } from '../../api'
 
-let data: Input[]
-const example: Input[] = parseInput(`
+let data: Input
+const example: Input = parseInput(`
 NNCB
 
 CH -> B
