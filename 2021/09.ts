@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import { getInput } from '../api'
 import { MappedSet } from '../lib'
 
 type Input = number[][]
@@ -124,4 +125,14 @@ export function part2(data: Input) {
     .take(3)
     .reduce(_.multiply)
     .value()
+}
+
+async function solve() {
+  const input = parseInput(await getInput('2021', __filename))
+  console.info(part1(input))
+  console.info(part2(input))
+}
+
+if (require.main === module) {
+  solve()
 }

@@ -1,13 +1,8 @@
 import _ from 'lodash'
+import { getInput } from '../api'
 import { pairPermutations, slidingPairs } from '../lib'
 
-const ALPHABET = [
-  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
-  'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-  'u', 'v', 'w', 'x', 'y', 'z'
-] as const
-type letter = typeof ALPHABET[number]
-type Element = Uppercase<letter>
+type Element = string
 type Polymer = Element[]
 type Pair = `${Element}${Element}`
 
@@ -163,4 +158,14 @@ export function part2({template, insertionRules}: Input) {
   const elementCountsAsc = Object.values(polymerCounters)
     .sort(_.subtract)
   return _.last(elementCountsAsc)! - _.first(elementCountsAsc)!
+}
+
+async function solve() {
+  const input = parseInput(await getInput('2021', __filename))
+  console.info(part1(input))
+  console.info(part2(input))
+}
+
+if (require.main === module) {
+  solve()
 }

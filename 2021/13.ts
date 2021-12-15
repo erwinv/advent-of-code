@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import { getInput } from '../api'
 
 type Coords = readonly [x: number, y: number]
 type Fold = {
@@ -93,4 +94,14 @@ export function part2(data: Input) {
     grid.fold(fold)
   }
   return grid.toString()
+}
+
+async function solve() {
+  const input = parseInput(await getInput('2021', __filename))
+  console.info(part1(input))
+  console.info(part2(input))
+}
+
+if (require.main === module) {
+  solve()
 }

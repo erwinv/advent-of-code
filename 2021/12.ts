@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import { getInput } from '../api'
 
 type Vertex = string // 'start' | 'end' | Uppercase<string> | Lowercase<string>
 type Edge = readonly [Vertex, Vertex]
@@ -100,4 +101,14 @@ export function part2(data: Input) {
   })
 
   return graph.paths.length
+}
+
+async function solve() {
+  const input = parseInput(await getInput('2021', __filename))
+  console.info(part1(input))
+  console.info(part2(input))
+}
+
+if (require.main === module) {
+  solve()
 }

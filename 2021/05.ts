@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import { getInput } from '../api'
 
 type LineEndpoints = readonly [x1: number, y1: number, x2: number, y2: number]
 type Input = LineEndpoints[]
@@ -98,4 +99,14 @@ export function part1(data: Input, includeDiagonalLines = false) {
 
 export function part2(data: Input) {
   return part1(data, true)
+}
+
+async function solve() {
+  const input = parseInput(await getInput('2021', __filename))
+  console.info(part1(input))
+  console.info(part2(input))
+}
+
+if (require.main === module) {
+  solve()
 }

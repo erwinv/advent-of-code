@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import { getInput } from '../api'
 
 type Bit = '0' | '1'
 type BitIndex = number
@@ -71,4 +72,14 @@ export function part2(data: Input) {
   const co2scrubRating = co2scrubStep(data, 0).join('')
 
   return parseInt(o2genRating, 2) * parseInt(co2scrubRating, 2)
+}
+
+async function solve() {
+  const input = parseInput(await getInput('2021', __filename))
+  console.info(part1(input))
+  console.info(part2(input))
+}
+
+if (require.main === module) {
+  solve()
 }

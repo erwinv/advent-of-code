@@ -62,3 +62,39 @@ export function pairPermutations<T>(xs: T[]): Iterable<readonly [T, T]> {
 
   return generator()
 }
+
+export class PriorityQueue<T> {
+  queue: Array<{
+    value: T
+    priority: number
+  }> = []
+  set: Set<T> = new Set()
+
+  addWithPriority(value: T, priority: number) {
+    const i = this.queue.findIndex(item => item.priority > priority)
+    if (i >= 0) {
+      this.queue.splice(i, 0, { value, priority })
+    } else {
+      this.queue.push({ value, priority })
+    }
+    this.set.add(value)
+  }
+  decreasePriority(value: T, priority: number) {
+    const i = this.queue.findIndex(item => item.value === value)
+    this.queue.splice(i, 1)
+    this.set.delete(value)
+
+    this.addWithPriority(value, priority)
+  }
+  extractMin(): T | undefined {
+    const min = this.queue.shift()?.value
+    if (min) this.set.delete(min)
+    return min
+  }
+  get size() {
+    return this.queue.length
+  }
+  has(value: T) {
+    return this.set.has(value)
+  }
+}

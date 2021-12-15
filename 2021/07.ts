@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import { getInput } from '../api'
 
 type Input = number[]
 
@@ -36,4 +37,14 @@ export function part2(data: Input) {
     const distance = Math.abs(x-y)
     return (distance * (distance + 1)) / 2
   })
+}
+
+async function solve() {
+  const input = parseInput(await getInput('2021', __filename))
+  console.info(part1(input))
+  console.info(part2(input))
+}
+
+if (require.main === module) {
+  solve()
 }

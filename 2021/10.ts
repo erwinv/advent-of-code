@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import { getInput } from '../api'
 
 const CHUNK_DELIMITERS = [
   '(', ')',
@@ -122,4 +123,14 @@ export function part2(data: Input) {
   const median = scores[Math.floor(scores.length / 2)]
 
   return median
+}
+
+async function solve() {
+  const input = parseInput(await getInput('2021', __filename))
+  console.info(part1(input))
+  console.info(part2(input))
+}
+
+if (require.main === module) {
+  solve()
 }
