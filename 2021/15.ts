@@ -66,12 +66,12 @@ class Grid {
       }
     }
 
-    const terminate = (u: V) => {
+    const terminate = (v: V) => {
       const S = [] as V[]
 
-      while (u) {
-        S.unshift(u)
-        u = prev[u]!
+      while (v) {
+        S.unshift(v)
+        v = prev[v]!
       }
 
       return S.slice(1).map(v => {
@@ -81,7 +81,7 @@ class Grid {
     }
 
     while (Q.size > 0) {
-      let u = Q.extractMin()!
+      const u = Q.extractMin()!
 
       if (u === target && (prev[u] || u === source)) {
         return terminate(u)
