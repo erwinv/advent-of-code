@@ -4,9 +4,9 @@ type Vertex = string // 'start' | 'end' | Uppercase<string> | Lowercase<string>
 type Edge = readonly [Vertex, Vertex]
 type Path = Vertex[]
 
-export type Input = Edge
+type Input = Edge[]
 
-export function parseInput(s: string): Input[] {
+export function parseInput(s: string): Input {
   const INPUT = /(start|end|[A-Z]+|[a-z]+)-(start|end|[A-Z]+|[a-z]+)/
   return s.split(/\r?\n/)
     .flatMap(line => {
@@ -63,7 +63,7 @@ function isSmallCave(c: string) {
   return c.toLowerCase() === c && !['start', 'end'].includes(c)
 }
 
-export function part1(data: Input[]) {
+export function part1(data: Input) {
   const graph = new Graph(data)
 
   graph.findPaths((nextCave, currentPath) => {
@@ -74,7 +74,7 @@ export function part1(data: Input[]) {
   return graph.paths.length
 }
 
-export function part2(data: Input[]) {
+export function part2(data: Input) {
   const graph = new Graph(data)
 
   const smallCaveMaxVisits = 2

@@ -1,9 +1,9 @@
 import _ from 'lodash'
 import { MappedSet } from '../lib'
 
-export type Input = number[]
+type Input = number[][]
 
-export function parseInput(s: string): Input[] {
+export function parseInput(s: string): Input {
   const INPUT = /\d+/
   return s.split(/\r?\n/)
     .flatMap(line => {
@@ -135,7 +135,7 @@ class Grid {
   }
 }
 
-export function part1(data: Input[]) {
+export function part1(data: Input) {
   const grid = new Grid(data)
   for (const __ of _.range(100)) {
     grid.step()
@@ -143,7 +143,7 @@ export function part1(data: Input[]) {
   return grid.numFlashes
 }
 
-export function part2(data: Input[]) {
+export function part2(data: Input) {
   const grid = new Grid(data)
   //console.info(`before any steps:\n${grid.toJSON()}`)
 

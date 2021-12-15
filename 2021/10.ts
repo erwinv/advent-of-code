@@ -9,16 +9,16 @@ const CHUNK_DELIMITERS = [
 
 type ChunkDelimiter = typeof CHUNK_DELIMITERS[number]
 
-export type Input = ChunkDelimiter[]
+type Input = ChunkDelimiter[][]
 
-export function parseInput(s: string): Input[] {
+export function parseInput(s: string): Input {
   const INPUT = /([()[\]{}<>]+)/
   return s.split(/\r?\n/)
     .flatMap(line => {
       const match = INPUT.exec(line)
       if (!match) return []
       return [
-        match[1].split('') as Input
+        match[1].split('') as ChunkDelimiter[]
       ]
     })
 }
@@ -58,7 +58,7 @@ function isClosingDelimiter(delimiter: ChunkDelimiter): delimiter is ClosingDeli
   return CLOSING_DELIMITERS.includes(delimiter as any)
 }
 
-export function part1(data: Input[]) {
+export function part1(data: Input) {
   return data.flatMap(line => {
     const findIllegalDelimiter = (stack: ChunkDelimiter[], remaining: ChunkDelimiter[]): ClosingDelimiter | null => {
       const next = remaining.shift()
@@ -86,7 +86,7 @@ export function part1(data: Input[]) {
   .reduce(_.add)
 }
 
-export function part2(data: Input[]) {
+export function part2(data: Input) {
   const scores = data.flatMap(line => {
     const findCompletionString = (stack: ChunkDelimiter[], remaining: ChunkDelimiter[]): ClosingDelimiter[] => {
       const next = remaining.shift()

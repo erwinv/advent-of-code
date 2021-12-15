@@ -1,12 +1,13 @@
 import _ from 'lodash'
 
-export type Input = number[]
+type Input = number[][]
 
-export function parseInput(s: string): Input[] {
+export function parseInput(s: string): Input {
   const NUMBER_DRAW = /[\d,]+/
   const BOARD_ROW = /[\d\s]+/
 
   return s.split(/\r?\n/)
+    .filter(l => l.trim() !== '')
     .flatMap((x, index) => {
       if (index === 0) {
         const match = NUMBER_DRAW.exec(x.trim())
@@ -20,21 +21,21 @@ export function parseInput(s: string): Input[] {
     })
 }
 
-type Sequence<T=number> = [T, T, T, T, T]
-type Row<T=number> = Sequence<T>
-
 class BingoBoard {
+  cells: number[][]
+  size: number
   unmarked: Set<number>
   marked: Set<number> = new Set()
-  numMarkedPerRow: [number, number, number, number, number]
-  numMarkedPerCol: [number, number, number, number, number]
+  numMarkedPerRow: number[]
+  numMarkedPerCol: number[]
   winningDraw: number = NaN
 
-  constructor(public rows: [Row, Row, Row, Row, Row]) {
-    this.unmarked = new Set(rows.flatMap(row => row))
-    this.rows = rows
-    this.numMarkedPerRow = [0, 0, 0, 0, 0]
-    this.numMarkedPerCol = [0, 0, 0, 0, 0]
+  constructor(cells: number[][]) {
+    this.size = cells.length
+    this.cells = [...cells.map(row => [...row])]
+    this.unmarked = new Set(cells.flatMap(row => row))
+    this.numMarkedPerRow = Array(this.size).fill(0)
+    this.numMarkedPerCol = Array(this.size).fill(0)
   }
 
   tryToMarkAndCheckBingo(draw: number) {
@@ -42,11 +43,11 @@ class BingoBoard {
       this.unmarked.delete(draw)
       this.marked.add(draw)
 
-      for (const [rowIndex, row] of this.rows.entries()) {
+      for (const [rowIndex, row] of this.cells.entries()) {
         const colIndex = row.indexOf(draw)
         if (colIndex >= 0) {
-          if (++this.numMarkedPerRow[rowIndex] === 5
-            || ++this.numMarkedPerCol[colIndex] === 5) {
+          if (++this.numMarkedPerRow[rowIndex] === this.size
+            || ++this.numMarkedPerCol[colIndex] === this.size) {
             this.winningDraw = draw
             return true
           }
@@ -64,10 +65,10 @@ class BingoBoard {
   }
 }
 
-export function part1(data: Input[]) {
+export function part1(data: Input) {
   const draws = _.head(data)!
   const boards = _.chunk(_.tail(data), 5)
-    .map(rows => new BingoBoard(rows as [Row, Row, Row, Row, Row]))
+    .map(cells => new BingoBoard(cells))
 
   for (const draw of draws) {
     const bingoScores = boards
@@ -80,10 +81,10 @@ export function part1(data: Input[]) {
   return NaN
 }
 
-export function part2(data: Input[]) {
+export function part2(data: Input) {
   const draws = _.head(data)!
   const boards = _.chunk(_.tail(data), 5)
-    .map(rows => new BingoBoard(rows as [Row, Row, Row, Row, Row]))
+    .map(cells => new BingoBoard(cells))
 
   let bingos = [] as BingoBoard[]
   let noBingos = [...boards]

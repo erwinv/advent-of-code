@@ -11,7 +11,7 @@ type Element = Uppercase<letter>
 type Polymer = Element[]
 type Pair = `${Element}${Element}`
 
-export type Input = {
+type Input = {
   template: Polymer
   insertionRules: Map<Pair, Element>
 }

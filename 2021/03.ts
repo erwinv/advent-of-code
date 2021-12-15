@@ -1,55 +1,32 @@
 import _ from 'lodash'
 
 type Bit = '0' | '1'
-type BitIndex = 0|1|2|3|4|5|6|7|8|9|10|11
+type BitIndex = number
 type BitCounter = Record<Bit, number>
 
-export type Input = readonly [Bit, Bit, Bit, Bit, Bit, Bit, Bit, Bit, Bit, Bit, Bit, Bit]
+type Word = Bit[]
+type Input = Word[]
 
-export function parseInput(s: string): Input[] {
-  const INPUT_PATTERN = /([01]{12})/
+export function parseInput(s: string): Input {
+  const INPUT_PATTERN = /([01]+)/
 
   return s.split(/\r?\n/)
     .flatMap(x => {
       const match = INPUT_PATTERN.exec(x)
       if (!match) return []
-      return [match[1].split('') as unknown as Input]
+      return [match[1].split('') as unknown as Word]
     })
 }
 
-export function part1(data: Input[]) {
-  const counters = data.reduce((
-    [c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12],
-    [b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12]
-    ) => {
-    c1[b1] += 1
-    c2[b2] += 1
-    c3[b3] += 1
-    c4[b4] += 1
-    c5[b5] += 1
-    c6[b6] += 1
-    c7[b7] += 1
-    c8[b8] += 1
-    c9[b9] += 1
-    c10[b10] += 1
-    c11[b11] += 1
-    c12[b12] += 1
-    return [c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12] as const
-  }, [
-    {'0': 0, '1': 0},
-    {'0': 0, '1': 0},
-    {'0': 0, '1': 0},
-    {'0': 0, '1': 0},
-    {'0': 0, '1': 0},
-    {'0': 0, '1': 0},
-    {'0': 0, '1': 0},
-    {'0': 0, '1': 0},
-    {'0': 0, '1': 0},
-    {'0': 0, '1': 0},
-    {'0': 0, '1': 0},
-    {'0': 0, '1': 0},
-  ] as readonly [BitCounter, BitCounter, BitCounter, BitCounter, BitCounter, BitCounter,
-      BitCounter, BitCounter, BitCounter, BitCounter, BitCounter, BitCounter])
+export function part1(data: Input) {
+  const wordLength = data[0].length
+
+  const counters = data.reduce((counters, word) => {
+    for (const [i, bit] of word.entries()) {
+      counters[i][bit] += 1
+    }
+    return counters
+  }, Array(wordLength).fill({}).map(() => ({'0': 0, '1': 0})) as BitCounter[])
 
   let gammaRate = ''
   let epsilonRate = ''
@@ -67,8 +44,8 @@ export function part1(data: Input[]) {
   return parseInt(gammaRate, 2) * parseInt(epsilonRate, 2)
 }
 
-export function part2(data: Input[]) {
-  const o2genStep = (data: Input[], bitIndex: BitIndex): Input => {
+export function part2(data: Input) {
+  const o2genStep = (data: Input, bitIndex: BitIndex): Word => {
     if (data.length === 1 || bitIndex > 11) return data[0]
 
     const [zeroes, ones] = _.partition(data, (input) => input[bitIndex] === '0')
@@ -79,7 +56,7 @@ export function part2(data: Input[]) {
     }
   }
   
-  const co2scrubStep = (data: Input[], bitIndex: BitIndex): Input => {
+  const co2scrubStep = (data: Input, bitIndex: BitIndex): Word => {
     if (data.length === 1 || bitIndex > 11) return data[0]
 
     const [zeroes, ones] = _.partition(data, (input) => input[bitIndex] == '0')

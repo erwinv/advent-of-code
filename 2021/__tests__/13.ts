@@ -1,8 +1,6 @@
-import { parseInput, Input, part1, part2 } from '../13'
-import { getInput } from '../../api'
+import { parseInput, part1, part2 } from '../13'
 
-let data: Input[]
-const example: Input[] = parseInput(`
+const example = parseInput(`
 6,10
 0,14
 9,10
@@ -26,32 +24,18 @@ fold along y=7
 fold along x=5
 `)
 
-beforeAll(async () => {
-  data = parseInput(await getInput('2021', '13'))
-})
-
 test('2021 day 13 part 1', () => {
   expect(part1(example)).toBe(17)
-  expect(part1(data)).toMatchInlineSnapshot(`765`)
 })
 
 test('2021 day 13 part 2', () => {
-  expect(part2(example)).toMatchInlineSnapshot(`
-"#####
+  expect(part2(example)).toBe(
+`#####
 #...#
 #...#
 #...#
 #####
 .....
-....."
-`)
-  expect(part2(data)).toMatchInlineSnapshot(`
-"###..####.#..#.####.#....###...##..#..#.
-#..#....#.#.#.....#.#....#..#.#..#.#..#.
-#..#...#..##.....#..#....#..#.#....####.
-###...#...#.#...#...#....###..#.##.#..#.
-#.#..#....#.#..#....#....#....#..#.#..#.
-#..#.####.#..#.####.####.#.....###.#..#."
-`)
+.....`
+)
 })
-

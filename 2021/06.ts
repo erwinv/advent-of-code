@@ -1,8 +1,8 @@
 import _ from 'lodash'
 
-export type Input = number
+type Input = number[]
 
-export function parseInput(s: string): Input[] {
+export function parseInput(s: string): Input {
   return s.split(',')
     .flatMap(x => /\d+/.test(x) ? [_.toNumber(x)] : [])
 }
@@ -21,7 +21,7 @@ class School {
   }
 }
 
-export function part1(data: Input[], numDays = 80) {
+export function part1(data: Input, numDays = 80) {
   const schools =  _.chain(data)
     .countBy(_.identity)
     .entries()
@@ -61,6 +61,6 @@ export function part1(data: Input[], numDays = 80) {
     .reduce(_.add)
 }
 
-export function part2(data: Input[]) {
+export function part2(data: Input) {
   return part1(data, 256)
 }

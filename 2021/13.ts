@@ -8,9 +8,9 @@ type Fold = {
   along: 'y',
   y: number
 }
-export type Input = Coords | Fold
+type Input = Array<Coords | Fold>
 
-export function parseInput(s: string): Input[] {
+export function parseInput(s: string): Input {
   const INPUT1 = /(\d+),(\d+)/
   const INPUT2 = /fold along ([xy])=(\d+)/
   return s.split(/\r?\n/)
@@ -73,11 +73,11 @@ class Grid {
   }
 }
 
-function isCoords(x: Input): x is Coords {
+function isCoords(x: Coords | Fold): x is Coords {
   return _.isArray(x)
 }
 
-export function part1(data: Input[]) {
+export function part1(data: Input) {
   const [points, folds] = _.partition(data, isCoords)
   const grid = new Grid(points)
   for (const fold of [_.head(folds)!]) {
@@ -86,11 +86,11 @@ export function part1(data: Input[]) {
   return grid.numDots
 }
 
-export function part2(data: Input[]) {
+export function part2(data: Input) {
   const [points, folds] = _.partition(data, isCoords)
   const grid = new Grid(points)
   for (const fold of folds) {
     grid.fold(fold)
   }
-  return grid
+  return grid.toString()
 }

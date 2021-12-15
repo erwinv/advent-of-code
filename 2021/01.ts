@@ -1,19 +1,19 @@
 import _ from 'lodash'
 
-export type Input = number
+type Input = number[]
 
-export function parseInput(s: string): Input[] {
+export function parseInput(s: string): Input {
   return s.split(/\r?\n/)
     .flatMap(x => /\d+/.test(x) ? [_.toNumber(x)] : [])
 }
 
-export function part1(data: Input[]) {
+export function part1(data: Input) {
   return _.zip(_.initial(data), _.tail(data))
     .filter(([x=0, y=0]) => y > x)
     .length
 }
 
-export function part2(data: Input[]) {
+export function part2(data: Input) {
   const n = data.length
   const threeElementWindowAggregateData = _.zip(
     _.slice(data, 0, n - 2),

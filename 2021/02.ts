@@ -7,9 +7,9 @@ interface Position {
   aim?: number
 }
 
-export type Input = readonly [Direction, number]
+type Input = Array<readonly [Direction, number]>
 
-export function parseInput(s: string): Input[] {
+export function parseInput(s: string): Input {
   const DIRECTION_MAGNITUDE = /(forward|down|up)\s+(\d+)/
 
   return s.split(/\r?\n/)
@@ -20,7 +20,7 @@ export function parseInput(s: string): Input[] {
     })
 }
 
-export function part1(data: Input[]) {
+export function part1(data: Input) {
   const finalPosition = data.reduce(({ horizontal, depth }, [direction, magnitude]) => {
 
     let newHorizontal = horizontal
@@ -44,7 +44,7 @@ export function part1(data: Input[]) {
   return finalPosition.horizontal * finalPosition.depth
 }
 
-export function part2(data: Input[]) {
+export function part2(data: Input) {
   const finalPosition = data.reduce(({ horizontal, depth, aim }, [direction, magnitude]) => {
 
     let newHorizontal = horizontal

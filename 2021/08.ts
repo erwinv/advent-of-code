@@ -1,11 +1,12 @@
 import _ from 'lodash'
 
-export type Input = {
+type Entry = {
   inputSignals: SegmentSet[]
   outputSignals: SegmentSet[]
 }
+type Input = Entry[]
 
-export function parseInput(s: string): Input[] {
+export function parseInput(s: string): Input {
   const INPUT = /^([abcdefg\s]+)\|([abcdefg\s]+)$/
 
   return s.split(/\r?\n/)
@@ -56,14 +57,14 @@ class SegmentSet extends Set<Segment> {
   }
 }
 
-export function part1(data: Input[]) {
+export function part1(data: Input) {
   return data
     .flatMap(({ outputSignals }) => outputSignals)
     .filter(signal => [2, 3, 4, 7].includes(signal.numSegments))
     .length
 }
 
-export function part2(data: Input[]) {
+export function part2(data: Input) {
   return data
     .map(({ inputSignals: signals, outputSignals }) => {
       const _1 = signals.find(s => s.numSegments === 2)!

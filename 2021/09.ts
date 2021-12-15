@@ -1,16 +1,16 @@
 import _ from 'lodash'
 import { MappedSet } from '../lib'
 
-export type Input = number[]
+type Input = number[][]
 
-export function parseInput(s: string): Input[] {
+export function parseInput(s: string): Input {
   const INPUT = /\d+/
   return s.split(/\r?\n/)
     .flatMap(x => {
       const match = INPUT.exec(x)
       if (!match) return []
 
-      const input = match[0].split('').map(_.toNumber) as Input
+      const input = match[0].split('').map(_.toNumber)
 
       return [input]
     })
@@ -111,16 +111,17 @@ class HeightMap {
   }
 }
 
-export function part1(data: Input[]) {
+export function part1(data: Input) {
   const grid = new HeightMap(data)
   return grid.riskLevels.reduce(_.add)
 }
 
-export function part2(data: Input[]) {
+export function part2(data: Input) {
   const grid = new HeightMap(data)
   return _.chain(grid.basins)
     .map(basin => basin.size)
     .orderBy(_.identity, 'desc')
     .take(3)
     .reduce(_.multiply)
+    .value()
 }

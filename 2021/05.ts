@@ -1,8 +1,9 @@
 import _ from 'lodash'
 
-export type Input = readonly [x1: number, y1: number, x2: number, y2: number]
+type LineEndpoints = readonly [x1: number, y1: number, x2: number, y2: number]
+type Input = LineEndpoints[]
 
-export function parseInput(s: string): Input[] {
+export function parseInput(s: string): Input {
   return s.split(/\r?\n/)
     .flatMap((x) => {
       const match = LINE_COORDINATES.exec(x.trim())
@@ -49,7 +50,7 @@ class Grid {
   }
 }
 
-export function part1(data: Input[], includeDiagonalLines = false) {
+export function part1(data: Input, includeDiagonalLines = false) {
   const [horizontalOrVerticalLines , diagonalLines] = _.partition(
     data.map(([x1, y1, x2, y2]) => new Line(x1, y1, x2, y2)),
     (line) => line.x1 === line.x2 || line.y1 === line.y2
@@ -95,6 +96,6 @@ export function part1(data: Input[], includeDiagonalLines = false) {
     .length
 }
 
-export function part2(data: Input[]) {
+export function part2(data: Input) {
   return part1(data, true)
 }

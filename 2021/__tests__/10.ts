@@ -1,16 +1,22 @@
-import { parseInput, Input, part1, part2 } from '../10'
-import { getInput } from '../../api'
+import { parseInput, part1, part2 } from '../10'
 
-let data: Input[]
-
-beforeAll(async () => {
-  data = parseInput(await getInput('2021', '10'))
-})
+const example = parseInput(`
+[({(<(())[]>[[{[]{<()<>>
+  [(()[<>])]({[<{<<[]>>(
+  {([(<{}[<>[]}>{[]{[(<()>
+  (((({<>}<{<{<>}{[]{[]{}
+  [[<[([]))<([[{}[[()]]]
+  [{[{({}]{}}([{[{{{}}([]
+  {<[[]]>}<{[{[{[]{()[[[]
+  [<(<(<(<{}))><([]([]()
+  <{([([[(<>()){}]>(<<{{
+  <{([{{}}[<[[[<>{}]]]>[]]  
+`)
 
 test('2021 day 10 part 1', () => {
-  expect(part1(data)).toMatchInlineSnapshot(`294195`)
+  expect(part1(example)).toBe(26397)
 })
 
 test('2021 day 10 part 2', () => {
-  expect(part2(data)).toMatchInlineSnapshot(`3490802734`)
+  expect(part2(example)).toBe(288957)
 })
