@@ -1,4 +1,5 @@
 import { parseInput, part1, part2 } from '../13'
+import stripAnsi from 'strip-ansi'
 
 const example = parseInput(`
 6,10
@@ -29,7 +30,7 @@ test('2021 day 13 part 1', () => {
 })
 
 test('2021 day 13 part 2', () => {
-  expect(part2(example)).toBe(
+  expect(stripAnsi(part2(example))).toBe(
 `#####
 #...#
 #...#

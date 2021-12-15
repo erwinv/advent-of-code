@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import { getInput } from '../api'
 import { MappedSet } from '../lib'
+import chalk from 'chalk'
 
 type Input = number[][]
 
@@ -129,10 +130,28 @@ class Grid {
     return neighbors
   }
 
-  toJSON() {
+  toString() {
+    const chalkMap = {
+      [1]: chalk.bgHex('#111111'),
+      [2]: chalk.bgHex('#222222'),
+      [3]: chalk.bgHex('#333333'),
+      [4]: chalk.bgHex('#444444'),
+      [5]: chalk.bgHex('#555555'),
+      [6]: chalk.bgHex('#666666'),
+      [7]: chalk.bgHex('#777777'),
+      [8]: chalk.bgHex('#888888'),
+      [9]: chalk.bgHex('#999999'),
+      [0]: chalk.bgHex('#AAAAAA'),
+    } as Record<number, chalk.Chalk>
     return this.data
-      .map(row => row.join(''))
+      .map(row => row
+        .map(v => chalkMap[v](' '))
+        .join('')
+      )
       .join('\n')
+  }
+  toJSON() {
+    return this.toString()
   }
 }
 
@@ -146,17 +165,15 @@ export function part1(data: Input) {
 
 export function part2(data: Input) {
   const grid = new Grid(data)
-  //console.info(`before any steps:\n${grid.toJSON()}`)
+  console.info(`before any steps:\n${grid.toJSON()}`)
 
   let step = 0
   while (true) {
     step++
     const synchronizedFlash = grid.step()
-    /*
     if (step < 10 || step % 10 === 0 || synchronizedFlash) {
       console.info(`after step ${step}:\n${grid.toJSON()}`)
     }
-    */
     if (synchronizedFlash) return step
   }
 }

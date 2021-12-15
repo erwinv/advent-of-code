@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import { getInput } from '../api'
 import { MappedSet } from '../lib'
+import chalk from 'chalk'
 
 type Input = number[][]
 
@@ -110,15 +111,40 @@ class HeightMap {
       return expandBasin(new LocationSet([lowPoint]), new LocationSet([lowPoint]))
     })
   }
+
+  toString() {
+    const chalkMap = {
+      [0]: chalk.bgHex('#000000'),
+      [1]: chalk.bgHex('#111111'),
+      [2]: chalk.bgHex('#222222'),
+      [3]: chalk.bgHex('#333333'),
+      [4]: chalk.bgHex('#444444'),
+      [5]: chalk.bgHex('#555555'),
+      [6]: chalk.bgHex('#666666'),
+      [7]: chalk.bgHex('#777777'),
+      [8]: chalk.bgHex('#888888'),
+      [9]: chalk.bgHex('#999999'),
+    } as Record<number, chalk.Chalk>
+
+    return this.data
+      .map(row => row.map(val => chalkMap[val](val))
+        .join('')
+      ).join('\n')
+  }
+  toJSON() {
+    return this.toString()
+  }
 }
 
 export function part1(data: Input) {
   const grid = new HeightMap(data)
+  console.info(grid.toString())
   return grid.riskLevels.reduce(_.add)
 }
 
 export function part2(data: Input) {
   const grid = new HeightMap(data)
+  console.info(grid.toString())
   return _.chain(grid.basins)
     .map(basin => basin.size)
     .orderBy(_.identity, 'desc')

@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import { getInput } from '../api'
+import chalk from 'chalk'
 
 type Input = number[][]
 
@@ -33,7 +34,7 @@ class BingoBoard {
 
   constructor(cells: number[][]) {
     this.size = cells.length
-    this.cells = [...cells.map(row => [...row])]
+    this.cells = cells.map(row => [...row])
     this.unmarked = new Set(cells.flatMap(row => row))
     this.numMarkedPerRow = Array(this.size).fill(0)
     this.numMarkedPerCol = Array(this.size).fill(0)
@@ -64,6 +65,21 @@ class BingoBoard {
   score() {
     return Array.from(this.unmarked).reduce(_.add) * this.winningDraw
   }
+
+  toString() {
+    return this.cells.map(row => row
+      .map(val => {
+        const x = _.padStart(`${val}`, 2)
+        return this.marked.has(val)
+          ? chalk.bgGray(x)
+          : chalk.dim(x)
+      })
+      .join(' ')
+    ).join('\n')
+  }
+  toJSON() {
+    return this.toString()
+  }
 }
 
 export function part1(data: Input) {
@@ -72,10 +88,12 @@ export function part1(data: Input) {
     .map(cells => new BingoBoard(cells))
 
   for (const draw of draws) {
-    const bingoScores = boards
-      .flatMap(board => board.tryToMarkAndCheckBingo(draw) ? [board.score()] : [])
-    if (bingoScores.length > 0) {
-      return _.max(bingoScores)
+    const wonBoards = boards
+      .flatMap(board => board.tryToMarkAndCheckBingo(draw) ? [board] : [])
+    if (wonBoards.length > 0) {
+      const [highestScoreBoard] = _.orderBy(wonBoards, b => b.score(), 'desc')
+      console.info(highestScoreBoard.toString())
+      return highestScoreBoard.score()
     }
   }
 
@@ -92,7 +110,9 @@ export function part2(data: Input) {
   for (const draw of draws) {
     [bingos, noBingos] = _.partition(noBingos, board => board.tryToMarkAndCheckBingo(draw))
     if (noBingos.length === 0) {
-      return _.min(bingos.map(board => board.score()))
+      const [loserBoard] = _.orderBy(bingos, b => b.score())
+      console.info(loserBoard.toString())
+      return loserBoard.score()
     }
   }
 

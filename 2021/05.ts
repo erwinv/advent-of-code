@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import { getInput } from '../api'
+import chalk from 'chalk'
 
 type LineEndpoints = readonly [x1: number, y1: number, x2: number, y2: number]
 type Input = LineEndpoints[]
@@ -49,6 +50,34 @@ class Grid {
     this.cells = _.range(sizeY)
       .map(row => _.range(sizeX).fill(0))
   }
+  toString() {
+    const chalkMap = {
+      [0]: chalk.bgHex('#000000'),
+      [1]: chalk.bgHex('#111111'),
+      [2]: chalk.bgHex('#222222'),
+      [3]: chalk.bgHex('#333333'),
+      [4]: chalk.bgHex('#444444'),
+      [5]: chalk.bgHex('#555555'),
+      [6]: chalk.bgHex('#666666'),
+      [7]: chalk.bgHex('#777777'),
+      [8]: chalk.bgHex('#888888'),
+      [9]: chalk.bgHex('#999999'),
+      [10]: chalk.bgHex('#AAAAAA'),
+      [11]: chalk.bgHex('#BBBBBB'),
+      [12]: chalk.bgHex('#CCCCCC'),
+      [13]: chalk.bgHex('#DDDDDD'),
+      [14]: chalk.bgHex('#EEEEEE'),
+      [15]: chalk.bgHex('#FFFFFF'),
+    } as Record<number, chalk.Chalk>
+
+    return this.cells.map(row => row
+      .map(val => (chalkMap[val] ?? chalkMap[15] )(' '))
+      .join('')
+    ).join('\n')
+  }
+  toJSON() {
+    return this.toString()
+  }
 }
 
 export function part1(data: Input, includeDiagonalLines = false) {
@@ -90,6 +119,8 @@ export function part1(data: Input, includeDiagonalLines = false) {
       }
     }
   }
+
+  console.info(grid.toString())
 
   return grid.cells
     .flatMap(row => row)

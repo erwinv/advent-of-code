@@ -22,13 +22,16 @@
   "homepage": "https://github.com/erwinv/advent-of-code#readme",
   "dependencies": {
     "axios": "^0.24.0",
+    "chalk": "^4.1.2",
     "dotenv-safe": "^8.2.0",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "strip-ansi": "^6.0.1"
   },
   "devDependencies": {
     "@types/jest": "^27.0.3",
     "@types/lodash": "^4.14.177",
     "@types/node": "^16.11.12",
-    "jest": "^27.4.3"
+    "jest": "^27.4.3",
+    "typescript": "^4.5.4"
   }
 }

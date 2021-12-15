@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import { getInput } from '../api'
 import { pairPermutations, PriorityQueue } from '../lib'
+import chalk from 'chalk'
 
 type Input = number[][]
 
@@ -73,6 +74,15 @@ class Grid {
         S.unshift(v)
         v = prev[v]!
       }
+
+      const soln = _.range(this.size)
+        .map((__, y) => _.range(this.size)
+          .map((__, x) => S.includes(`${x},${y}`)
+            ? chalk.bgGray(this.cells[y][x])
+            : chalk.dim(this.cells[y][x])
+          )
+        )
+      console.info(soln.map(row => row.join('')).join('\n'))
 
       return S.slice(1).map(v => {
         const [x, y] = v.split(',').map(_.toNumber)

@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import { getInput } from '../api'
+import chalk from 'chalk'
 
 type Coords = readonly [x: number, y: number]
 type Fold = {
@@ -67,7 +68,10 @@ class Grid {
 
   toString() {
     return _.unzip(this.cells)
-      .map(r => r.map(c => c ? '#' : '.').join('')).join('\n')
+      .map(r => r.map(c => c
+        ? chalk.bgGray('#')
+        : chalk.dim('.')
+        ).join('')).join('\n')
   }
   toJSON() {
     return this.toString()
@@ -84,6 +88,7 @@ export function part1(data: Input) {
   for (const fold of [_.head(folds)!]) {
     grid.fold(fold)
   }
+  console.info(grid.toString())
   return grid.numDots
 }
 
@@ -93,6 +98,7 @@ export function part2(data: Input) {
   for (const fold of folds) {
     grid.fold(fold)
   }
+  console.info(grid.toString())
   return grid.toString()
 }
 
