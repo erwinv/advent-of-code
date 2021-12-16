@@ -47,30 +47,31 @@ if (!validateDay(day)) {
   throw new Error(`Invalid day: ${day}`)
 }
 
+function withPerformanceLog(step: (...args: unknown[]) => void) {
+  const start = performance.now()
+  step()
+  const end = performance.now()
+  console.info(`elpased time: ${(end - start).toFixed(2)}ms\n`)
+}
+
 const solver = yr[day]
 
 getInput(year, day)
   .then(input => {
-    const solverStep = solver.solve(input, debug)
+    const solverSteps = solver.solve(input, debug)
 
-    let start = performance.now()
-    const parsedInput = solverStep.next().value
-    let end = performance.now()
+    withPerformanceLog(() => {
+      const parsedInput = solverSteps.next().value
+      console.info(`parsed input:\n${parsedInput}`)
+    })
 
-    console.info(`parsed input:\n${parsedInput}`)
-    console.info(`time: ${(end - start).toFixed(2)}ms\n`)
+    withPerformanceLog(() => {
+      const answer1 = solverSteps.next().value
+      console.info(`part 1 answer:\n${answer1}`)
+    })
 
-    start = performance.now()
-    const answer1 = solverStep.next().value
-    end = performance.now()
-
-    console.info(`part 1 answer:\n${answer1}`)
-    console.info(`time: ${(end - start).toFixed(2)}ms\n`)
-
-    start = performance.now()
-    const answer2 = solverStep.next().value
-    end = performance.now()
-
-    console.info(`part 2 answer:\n${answer2}`)
-    console.info(`time: ${(end - start).toFixed(2)}ms\n`)
+    withPerformanceLog(() => {
+      const answer2 = solverSteps.next().value
+      console.info(`part 2 answer:\n${answer2}`)
+    })
   })
