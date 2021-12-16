@@ -51,7 +51,7 @@ function withPerformanceLog(step: (...args: unknown[]) => void) {
   const start = performance.now()
   step()
   const end = performance.now()
-  console.info(`elpased time: ${(end - start).toFixed(2)}ms\n`)
+  console.info(`elapsed time: ${(end - start).toFixed(2)}ms\n`)
 }
 
 const solver = yr[day]
