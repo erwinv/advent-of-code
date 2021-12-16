@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { getInput } from '../api'
 
 type Vertex = string // 'start' | 'end' | Uppercase<string> | Lowercase<string>
 type Edge = readonly [Vertex, Vertex]
@@ -64,7 +63,7 @@ function isSmallCave(c: string) {
   return c.toLowerCase() === c && !['start', 'end'].includes(c)
 }
 
-export function part1(data: Input) {
+export function part1(data: Input, debug = true) {
   const graph = new Graph(data)
 
   graph.findPaths((nextCave, currentPath) => {
@@ -75,7 +74,7 @@ export function part1(data: Input) {
   return graph.paths.length
 }
 
-export function part2(data: Input) {
+export function part2(data: Input, debug = true) {
   const graph = new Graph(data)
 
   const smallCaveMaxVisits = 2
@@ -103,12 +102,9 @@ export function part2(data: Input) {
   return graph.paths.length
 }
 
-async function solve() {
-  const input = parseInput(await getInput('2021', __filename))
-  console.info(part1(input))
-  console.info(part2(input))
-}
-
-if (require.main === module) {
-  solve()
+export function* solve(input: string, debug = false) {
+  const data = parseInput(input)
+  yield data
+  yield part1(data, debug)
+  yield part2(data, debug)
 }

@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { getInput } from '../api'
 
 type Direction = 'forward' | 'up' | 'down'
 interface Position {
@@ -21,7 +20,7 @@ export function parseInput(s: string): Input {
     })
 }
 
-export function part1(data: Input) {
+export function part1(data: Input, debug = true) {
   const finalPosition = data.reduce(({ horizontal, depth }, [direction, magnitude]) => {
 
     let newHorizontal = horizontal
@@ -45,7 +44,7 @@ export function part1(data: Input) {
   return finalPosition.horizontal * finalPosition.depth
 }
 
-export function part2(data: Input) {
+export function part2(data: Input, debug = true) {
   const finalPosition = data.reduce(({ horizontal, depth, aim }, [direction, magnitude]) => {
 
     let newHorizontal = horizontal
@@ -74,12 +73,9 @@ export function part2(data: Input) {
   return finalPosition.horizontal * finalPosition.depth
 }
 
-async function solve() {
-  const input = parseInput(await getInput('2021', __filename))
-  console.info(part1(input))
-  console.info(part2(input))
-}
-
-if (require.main === module) {
-  solve()
+export function* solve(input: string, debug = false) {
+  const data = parseInput(input)
+  yield data
+  yield part1(data, debug)
+  yield part2(data, debug)
 }

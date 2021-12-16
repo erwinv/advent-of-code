@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { getInput } from '../api'
 import { MappedSet } from '../lib'
 import chalk from 'chalk'
 
@@ -155,7 +154,7 @@ class Grid {
   }
 }
 
-export function part1(data: Input) {
+export function part1(data: Input, debug = true) {
   const grid = new Grid(data)
   for (const __ of _.range(100)) {
     grid.step()
@@ -163,27 +162,25 @@ export function part1(data: Input) {
   return grid.numFlashes
 }
 
-export function part2(data: Input) {
+export function part2(data: Input, debug = true) {
   const grid = new Grid(data)
-  console.info(`before any steps:\n${grid.toJSON()}`)
-
+  if (debug) {
+    console.info(`before any steps:\n${grid.toJSON()}`)
+  }
   let step = 0
   while (true) {
     step++
     const synchronizedFlash = grid.step()
-    if (step < 10 || step % 10 === 0 || synchronizedFlash) {
+    if (debug && (step < 10 || step % 10 === 0 || synchronizedFlash)) {
       console.info(`after step ${step}:\n${grid.toJSON()}`)
     }
     if (synchronizedFlash) return step
   }
 }
 
-async function solve() {
-  const input = parseInput(await getInput('2021', __filename))
-  console.info(part1(input))
-  console.info(part2(input))
-}
-
-if (require.main === module) {
-  solve()
+export function* solve(input: string, debug = false) {
+  const data = parseInput(input)
+  yield data
+  yield part1(data, debug)
+  yield part2(data, debug)
 }

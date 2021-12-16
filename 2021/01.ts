@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { getInput } from '../api'
 
 type Input = number[]
 
@@ -8,13 +7,13 @@ export function parseInput(s: string): Input {
     .flatMap(x => /\d+/.test(x) ? [_.toNumber(x)] : [])
 }
 
-export function part1(data: Input) {
+export function part1(data: Input, debug = true) {
   return _.zip(_.initial(data), _.tail(data))
     .filter(([x=0, y=0]) => y > x)
     .length
 }
 
-export function part2(data: Input) {
+export function part2(data: Input, debug = true) {
   const n = data.length
   const threeElementWindowAggregateData = _.zip(
     _.slice(data, 0, n - 2),
@@ -25,12 +24,9 @@ export function part2(data: Input) {
   return part1(threeElementWindowAggregateData)
 }
 
-async function solve() {
-  const input = parseInput(await getInput('2021', __filename))
-  console.info(part1(input))
-  console.info(part2(input))
-}
-
-if (require.main === module) {
-  solve()
+export function* solve(input: string, debug = false) {
+  const data = parseInput(input)
+  yield data
+  yield part1(data, debug)
+  yield part2(data, debug)
 }

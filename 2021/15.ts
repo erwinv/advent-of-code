@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { getInput } from '../api'
 import { pairPermutations, PriorityQueue } from '../lib'
 import chalk from 'chalk'
 
@@ -44,7 +43,7 @@ class Grid {
     return this.toString()
   }
 
-  shortestPathRisk() {
+  shortestPathRisk(debug = true) {
     // Dijkstra's Algorithm
     // https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm#Using_a_priority_queue
 
@@ -75,14 +74,16 @@ class Grid {
         v = prev[v]!
       }
 
-      const soln = _.range(this.size)
-        .map((__, y) => _.range(this.size)
-          .map((__, x) => S.includes(`${x},${y}`)
-            ? chalk.bgGray(this.cells[y][x])
-            : chalk.dim(this.cells[y][x])
+      if (debug) {
+        const soln = _.range(this.size)
+          .map((__, y) => _.range(this.size)
+            .map((__, x) => S.includes(`${x},${y}`)
+              ? chalk.bgGray(this.cells[y][x])
+              : chalk.dim(this.cells[y][x])
+            )
           )
-        )
-      console.info(soln.map(row => row.join('')).join('\n'))
+        console.info(soln.map(row => row.join('')).join('\n'))
+      }
 
       return S.slice(1).map(v => {
         const [x, y] = v.split(',').map(_.toNumber)
@@ -122,22 +123,19 @@ class Grid {
   }
 }
 
-export function part1(data: Input) {
+export function part1(data: Input, debug = true) {
   const grid = new Grid(data)
-  return grid.shortestPathRisk()
+  return grid.shortestPathRisk(debug)
 }
 
-export function part2(data: Input) {
+export function part2(data: Input, debug = true) {
   const grid = new Grid(data, 5)
-  return grid.shortestPathRisk()
+  return grid.shortestPathRisk(debug)
 }
 
-async function solve() {
-  const input = parseInput(await getInput('2021', __filename))
-  console.info(part1(input))
-  console.info(part2(input))
-}
-
-if (require.main === module) {
-  solve()
+export function* solve(input: string, debug = false) {
+  const data = parseInput(input)
+  yield data
+  yield part1(data, debug)
+  yield part2(data, debug)
 }

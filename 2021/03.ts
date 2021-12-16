@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { getInput } from '../api'
 
 type Bit = '0' | '1'
 type BitIndex = number
@@ -19,7 +18,7 @@ export function parseInput(s: string): Input {
     })
 }
 
-export function part1(data: Input) {
+export function part1(data: Input, debug = true) {
   const wordLength = data[0].length
 
   const counters = data.reduce((counters, word) => {
@@ -45,7 +44,7 @@ export function part1(data: Input) {
   return parseInt(gammaRate, 2) * parseInt(epsilonRate, 2)
 }
 
-export function part2(data: Input) {
+export function part2(data: Input, debug = true) {
   const o2genStep = (data: Input, bitIndex: BitIndex): Word => {
     if (data.length === 1 || bitIndex > 11) return data[0]
 
@@ -74,12 +73,9 @@ export function part2(data: Input) {
   return parseInt(o2genRating, 2) * parseInt(co2scrubRating, 2)
 }
 
-async function solve() {
-  const input = parseInput(await getInput('2021', __filename))
-  console.info(part1(input))
-  console.info(part2(input))
-}
-
-if (require.main === module) {
-  solve()
+export function* solve(input: string, debug = false) {
+  const data = parseInput(input)
+  yield data
+  yield part1(data, debug)
+  yield part2(data, debug)
 }

@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { getInput } from '../api'
 
 type Input = number[]
 
@@ -22,7 +21,7 @@ class School {
   }
 }
 
-export function part1(data: Input, numDays = 80) {
+export function part1(data: Input, numDays = 80, debug = false) {
   const schools =  _.chain(data)
     .countBy(_.identity)
     .entries()
@@ -62,16 +61,13 @@ export function part1(data: Input, numDays = 80) {
     .reduce(_.add)
 }
 
-export function part2(data: Input) {
-  return part1(data, 256)
+export function part2(data: Input, debug = false) {
+  return part1(data, 256, debug)
 }
 
-async function solve() {
-  const input = parseInput(await getInput('2021', __filename))
-  console.info(part1(input))
-  console.info(part2(input))
-}
-
-if (require.main === module) {
-  solve()
+export function* solve(input: string, debug = false) {
+  const data = parseInput(input)
+  yield data
+  yield part1(data, undefined, debug)
+  yield part2(data, debug)
 }

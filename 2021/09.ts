@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { getInput } from '../api'
 import { MappedSet } from '../lib'
 import chalk from 'chalk'
 
@@ -136,15 +135,19 @@ class HeightMap {
   }
 }
 
-export function part1(data: Input) {
+export function part1(data: Input, debug = true) {
   const grid = new HeightMap(data)
-  console.info(grid.toString())
+  if (debug) {
+    console.info(grid.toString())
+  }
   return grid.riskLevels.reduce(_.add)
 }
 
-export function part2(data: Input) {
+export function part2(data: Input, debug = true) {
   const grid = new HeightMap(data)
-  console.info(grid.toString())
+  if (debug) {
+    console.info(grid.toString())
+  }
   return _.chain(grid.basins)
     .map(basin => basin.size)
     .orderBy(_.identity, 'desc')
@@ -153,12 +156,9 @@ export function part2(data: Input) {
     .value()
 }
 
-async function solve() {
-  const input = parseInput(await getInput('2021', __filename))
-  console.info(part1(input))
-  console.info(part2(input))
-}
-
-if (require.main === module) {
-  solve()
+export function* solve(input: string, debug = false) {
+  const data = parseInput(input)
+  yield data
+  yield part1(data, debug)
+  yield part2(data, debug)
 }

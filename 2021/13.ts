@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { getInput } from '../api'
 import chalk from 'chalk'
 
 type Coords = readonly [x: number, y: number]
@@ -82,32 +81,33 @@ function isCoords(x: Coords | Fold): x is Coords {
   return _.isArray(x)
 }
 
-export function part1(data: Input) {
+export function part1(data: Input, debug = true) {
   const [points, folds] = _.partition(data, isCoords)
   const grid = new Grid(points)
   for (const fold of [_.head(folds)!]) {
     grid.fold(fold)
   }
-  console.info(grid.toString())
+  if (debug) {
+    console.info(grid.toString())
+  }
   return grid.numDots
 }
 
-export function part2(data: Input) {
+export function part2(data: Input, debug = true) {
   const [points, folds] = _.partition(data, isCoords)
   const grid = new Grid(points)
   for (const fold of folds) {
     grid.fold(fold)
   }
-  console.info(grid.toString())
+  if (debug) {
+    console.info(grid.toString())
+  }
   return grid.toString()
 }
 
-async function solve() {
-  const input = parseInput(await getInput('2021', __filename))
-  console.info(part1(input))
-  console.info(part2(input))
-}
-
-if (require.main === module) {
-  solve()
+export function* solve(input: string, debug = false) {
+  const data = parseInput(input)
+  yield data
+  yield part1(data, debug)
+  yield part2(data, debug)
 }

@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { getInput } from '../api'
 import { slidingPairs } from '../lib'
 
 type Element = string
@@ -86,26 +85,23 @@ function polymerize(template: Polymer, rules: Input['insertionRules'], steps: nu
   return elementCounts
 }
 
-export function part1({template, insertionRules}: Input) {
+export function part1({template, insertionRules}: Input, debug = true) {
   const elementCounts = polymerize(template, insertionRules, 10)
   const elementCountsAsc = Object.values(elementCounts)
     .sort(_.subtract)
   return _.last(elementCountsAsc)! - _.first(elementCountsAsc)!
 }
 
-export function part2({template, insertionRules}: Input) {
+export function part2({template, insertionRules}: Input, debug = true) {
   const elementCounts = polymerize(template, insertionRules, 40)
   const elementCountsAsc = Object.values(elementCounts)
     .sort(_.subtract)
   return _.last(elementCountsAsc)! - _.first(elementCountsAsc)!
 }
 
-async function solve() {
-  const input = parseInput(await getInput('2021', __filename))
-  console.info(part1(input))
-  console.info(part2(input))
-}
-
-if (require.main === module) {
-  solve()
+export function* solve(input: string, debug = false) {
+  const data = parseInput(input)
+  yield data
+  yield part1(data, debug)
+  yield part2(data, debug)
 }

@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { getInput } from '../api'
 
 type Entry = {
   inputSignals: SegmentSet[]
@@ -58,14 +57,14 @@ class SegmentSet extends Set<Segment> {
   }
 }
 
-export function part1(data: Input) {
+export function part1(data: Input, debug = true) {
   return data
     .flatMap(({ outputSignals }) => outputSignals)
     .filter(signal => [2, 3, 4, 7].includes(signal.numSegments))
     .length
 }
 
-export function part2(data: Input) {
+export function part2(data: Input, debug = true) {
   return data
     .map(({ inputSignals: signals, outputSignals }) => {
       const _1 = signals.find(s => s.numSegments === 2)!
@@ -100,12 +99,9 @@ export function part2(data: Input) {
     .reduce(_.add)
 }
 
-async function solve() {
-  const input = parseInput(await getInput('2021', __filename))
-  console.info(part1(input))
-  console.info(part2(input))
-}
-
-if (require.main === module) {
-  solve()
+export function* solve(input: string, debug = false) {
+  const data = parseInput(input)
+  yield data
+  yield part1(data, debug)
+  yield part2(data, debug)
 }

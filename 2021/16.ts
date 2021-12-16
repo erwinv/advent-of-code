@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { getInput } from '../api'
 import chalk from 'chalk'
 
 export type Input = string
@@ -46,7 +45,7 @@ interface Operator extends Packet {
   subpackets: Array<Literal | Operator>
 }
 
-function parsePacket(bits: string): readonly [Literal | Operator, string] {
+function parsePacket(bits: string, debug = false): readonly [Literal | Operator, string] {
   const versionBits = bits.substring(0, 3)
   const typeIdBits = bits.substring(3, 6)
 
@@ -68,12 +67,14 @@ function parsePacket(bits: string): readonly [Literal | Operator, string] {
 
     const remainingBits = bits.substring(parserIndex)
 
-    console.info(
-      chalk.bgRed(versionBits) +
-      chalk.bgBlue(typeIdBits) +
-      chalk.bgGreen(valueBits) +
-      chalk.bgGray(remainingBits)
-    )
+    if (debug) {
+      console.info(
+        chalk.bgRed(versionBits) +
+        chalk.bgBlue(typeIdBits) +
+        chalk.bgGreen(valueBits) +
+        chalk.bgGray(remainingBits)
+      )
+    }
 
     return [{
       version,
@@ -102,14 +103,16 @@ function parsePacket(bits: string): readonly [Literal | Operator, string] {
     ? bits.substring(7+15+length)
     : remaining
 
-  console.info(
-    chalk.bgRed(versionBits) +
-    chalk.bgBlue(typeIdBits) +
-    chalk.bgCyan(bits.at(6)) +
-    chalk.bgMagenta(lengthBits) +
-    chalk.bgGreen(subpacketsBits) +
-    chalk.bgGray(remainingBits)
-  )
+  if (debug) {
+    console.info(
+      chalk.bgRed(versionBits) +
+      chalk.bgBlue(typeIdBits) +
+      chalk.bgCyan(bits.at(6)) +
+      chalk.bgMagenta(lengthBits) +
+      chalk.bgGreen(subpacketsBits) +
+      chalk.bgGray(remainingBits)
+    )
+  }
 
   return [{
     version,
@@ -147,12 +150,12 @@ function parsePackets(bits: string, lengthType: Operator['lengthType'], length: 
   return [subpackets, remaining] as const
 }
 
-export function parseTransmission(hex: string): Literal | Operator {
+export function parseTransmission(hex: string, debug = false): Literal | Operator {
   let bits = ''
   for (const digit of hex) {
     bits += _.padStart(parseInt(digit, 16).toString(2), 4, '0')
   }
-  const [packet] = parsePacket(bits)
+  const [packet] = parsePacket(bits, debug)
   return packet
 }
 
@@ -185,14 +188,14 @@ function foldRecursive<T>(
   return operatorFolder(tree)(...sutbreeValues)
 }
 
-export function part1(data: Input) {
-  const packet = parseTransmission(data)
+export function part1(data: Input, debug = true) {
+  const packet = parseTransmission(data, debug)
   const sumVersions = foldLeft(packet, (x, packet) => x + packet.version, 0)
   return sumVersions
 }
 
-export function part2(data: Input) {
-  const packet = parseTransmission(data)
+export function part2(data: Input, debug = true) {
+  const packet = parseTransmission(data, debug)
   return foldRecursive(packet,
     ({ value }) => value,
     ({ operation }) => {
@@ -209,12 +212,9 @@ export function part2(data: Input) {
   )
 }
 
-async function solve() {
-  const input = parseInput(await getInput('2021', __filename))
-  console.info(part1(input))
-  console.info(part2(input))
-}
-
-if (require.main === module) {
-  solve()
+export function* solve(input: string, debug = false) {
+  const data = parseInput(input)
+  yield data
+  yield part1(data, debug)
+  yield part2(data, debug)
 }

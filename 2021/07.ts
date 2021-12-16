@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { getInput } from '../api'
 
 type Input = number[]
 
@@ -10,7 +9,7 @@ export function parseInput(s: string): Input {
 
 type FuelCalculation = (pos1: number, pos2: number) => number
 
-export function part1(data: Input, fuelCalculation: FuelCalculation = (x, y) => Math.abs(x - y)) {
+export function part1(data: Input, fuelCalculation: FuelCalculation = (x, y) => Math.abs(x - y), debug = false) {
   const counts = _.chain(data)
     .countBy(_.identity)
     .entries()
@@ -32,19 +31,16 @@ export function part1(data: Input, fuelCalculation: FuelCalculation = (x, y) => 
   return _.min(fuelConsumptions.map(({ fuel }) => fuel))
 }
 
-export function part2(data: Input) {
+export function part2(data: Input, debug = true) {
   return part1(data, (x, y) => {
     const distance = Math.abs(x-y)
     return (distance * (distance + 1)) / 2
   })
 }
 
-async function solve() {
-  const input = parseInput(await getInput('2021', __filename))
-  console.info(part1(input))
-  console.info(part2(input))
-}
-
-if (require.main === module) {
-  solve()
+export function* solve(input: string, debug = false) {
+  const data = parseInput(input)
+  yield data
+  yield part1(data, undefined, debug)
+  yield part2(data, debug)
 }

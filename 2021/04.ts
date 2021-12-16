@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { getInput } from '../api'
 import chalk from 'chalk'
 
 type Input = number[][]
@@ -82,7 +81,7 @@ class BingoBoard {
   }
 }
 
-export function part1(data: Input) {
+export function part1(data: Input, debug = true) {
   const draws = _.head(data)!
   const boards = _.chunk(_.tail(data), 5)
     .map(cells => new BingoBoard(cells))
@@ -92,7 +91,9 @@ export function part1(data: Input) {
       .flatMap(board => board.tryToMarkAndCheckBingo(draw) ? [board] : [])
     if (wonBoards.length > 0) {
       const [highestScoreBoard] = _.orderBy(wonBoards, b => b.score(), 'desc')
-      console.info(highestScoreBoard.toString())
+      if (debug) {
+        console.info(highestScoreBoard.toString())
+      }
       return highestScoreBoard.score()
     }
   }
@@ -100,7 +101,7 @@ export function part1(data: Input) {
   return NaN
 }
 
-export function part2(data: Input) {
+export function part2(data: Input, debug = true) {
   const draws = _.head(data)!
   const boards = _.chunk(_.tail(data), 5)
     .map(cells => new BingoBoard(cells))
@@ -111,7 +112,9 @@ export function part2(data: Input) {
     [bingos, noBingos] = _.partition(noBingos, board => board.tryToMarkAndCheckBingo(draw))
     if (noBingos.length === 0) {
       const [loserBoard] = _.orderBy(bingos, b => b.score())
-      console.info(loserBoard.toString())
+      if (debug) {
+        console.info(loserBoard.toString())
+      }
       return loserBoard.score()
     }
   }
@@ -119,12 +122,9 @@ export function part2(data: Input) {
   return NaN
 }
 
-async function solve() {
-  const input = parseInput(await getInput('2021', __filename))
-  console.info(part1(input))
-  console.info(part2(input))
-}
-
-if (require.main === module) {
-  solve()
+export function* solve(input: string, debug = false) {
+  const data = parseInput(input)
+  yield data
+  yield part1(data, debug)
+  yield part2(data, debug)
 }

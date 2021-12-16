@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { getInput } from '../api'
 
 const CHUNK_DELIMITERS = [
   '(', ')',
@@ -59,7 +58,7 @@ function isClosingDelimiter(delimiter: ChunkDelimiter): delimiter is ClosingDeli
   return CLOSING_DELIMITERS.includes(delimiter as any)
 }
 
-export function part1(data: Input) {
+export function part1(data: Input, debug = true) {
   return data.flatMap(line => {
     const findIllegalDelimiter = (stack: ChunkDelimiter[], remaining: ChunkDelimiter[]): ClosingDelimiter | null => {
       const next = remaining.shift()
@@ -87,7 +86,7 @@ export function part1(data: Input) {
   .reduce(_.add)
 }
 
-export function part2(data: Input) {
+export function part2(data: Input, debug = true) {
   const scores = data.flatMap(line => {
     const findCompletionString = (stack: ChunkDelimiter[], remaining: ChunkDelimiter[]): ClosingDelimiter[] => {
       const next = remaining.shift()
@@ -125,12 +124,9 @@ export function part2(data: Input) {
   return median
 }
 
-async function solve() {
-  const input = parseInput(await getInput('2021', __filename))
-  console.info(part1(input))
-  console.info(part2(input))
-}
-
-if (require.main === module) {
-  solve()
+export function* solve(input: string, debug = false) {
+  const data = parseInput(input)
+  yield data
+  yield part1(data, debug)
+  yield part2(data, debug)
 }

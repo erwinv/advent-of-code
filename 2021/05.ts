@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { getInput } from '../api'
 import chalk from 'chalk'
 
 type LineEndpoints = readonly [x1: number, y1: number, x2: number, y2: number]
@@ -80,7 +79,7 @@ class Grid {
   }
 }
 
-export function part1(data: Input, includeDiagonalLines = false) {
+export function part1(data: Input, includeDiagonalLines = false, debug = true) {
   const [horizontalOrVerticalLines , diagonalLines] = _.partition(
     data.map(([x1, y1, x2, y2]) => new Line(x1, y1, x2, y2)),
     (line) => line.x1 === line.x2 || line.y1 === line.y2
@@ -120,7 +119,9 @@ export function part1(data: Input, includeDiagonalLines = false) {
     }
   }
 
-  console.info(grid.toString())
+  if (debug) {
+    console.info(grid.toString())
+  }
 
   return grid.cells
     .flatMap(row => row)
@@ -128,16 +129,13 @@ export function part1(data: Input, includeDiagonalLines = false) {
     .length
 }
 
-export function part2(data: Input) {
-  return part1(data, true)
+export function part2(data: Input, debug = true) {
+  return part1(data, true, debug)
 }
 
-async function solve() {
-  const input = parseInput(await getInput('2021', __filename))
-  console.info(part1(input))
-  console.info(part2(input))
-}
-
-if (require.main === module) {
-  solve()
+export function* solve(input: string, debug = false) {
+  const data = parseInput(input)
+  yield data
+  yield part1(data, undefined, debug)
+  yield part2(data, debug)
 }
