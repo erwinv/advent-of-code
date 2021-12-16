@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import { getInput } from '../api'
-import { pairPermutations, slidingPairs } from '../lib'
+import { slidingPairs } from '../lib'
 
 type Element = string
 type Polymer = Element[]
