@@ -152,9 +152,7 @@ export function parseTransmission(hex: string): Literal | Operator {
   for (const digit of hex) {
     bits += _.padStart(parseInt(digit, 16).toString(2), 4, '0')
   }
-  console.info(hex, bits)
   const [packet] = parsePacket(bits)
-  console.info(JSON.stringify(packet, null, 2))
   return packet
 }
 
