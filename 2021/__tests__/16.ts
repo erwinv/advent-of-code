@@ -1,4 +1,4 @@
-import { parseInput, part1, part2 } from '../16'
+import { part1, part2 } from '../16'
 import { parseTransmission } from '../16'
 
 test('2021 day 16 parser', () => {

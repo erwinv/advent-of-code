@@ -1,7 +1,6 @@
 import _ from 'lodash'
-import { getInput } from './api'
 
-export type Input = string[]
+type Input = string[]
 
 export function parseInput(s: string): Input {
   const INPUT = /(\w+)/
@@ -15,20 +14,17 @@ export function parseInput(s: string): Input {
     })
 }
 
-export function part1(data: Input) {
+export function part1(data: Input, debug = true) {
   return data
 }
 
-export function part2(data: Input) {
+export function part2(data: Input, debug = true) {
   return data
 }
 
-async function solve() {
-  const input = parseInput(await getInput('2021', __filename))
-  console.info(part1(input))
-  console.info(part2(input))
-}
-
-if (require.main === module) {
-  solve()
+export function* solve(input: string, debug = false) {
+  const data = parseInput(input)
+  yield data
+  yield part1(data, debug)
+  yield part2(data, debug)
 }

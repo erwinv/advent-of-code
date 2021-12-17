@@ -2,13 +2,14 @@
   "name": "advent-of-code",
   "version": "1.0.0",
   "description": "",
-  "main": "./build/api.js",
+  "main": "./build/solve.js",
   "scripts": {
     "build": "tsc",
     "pretest": "npm run build",
     "test": "jest",
     "build:watch": "tsc --watch",
-    "test:watch": "jest --watch --verbose=false --coverage=false"
+    "test:watch": "jest --watch --verbose=false --coverage=false",
+    "start": "node ./build/solve.js"
   },
   "repository": {
     "type": "git",
