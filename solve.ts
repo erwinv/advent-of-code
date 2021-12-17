@@ -44,35 +44,38 @@ function validateDay(x: string): x is keyof typeof yr {
   return Object.keys(yr).includes(x)
 }
 
-if (!validateDay(day)) {
+if (!validateDay(day) && day !== 'all') {
   throw new Error(`Invalid day: ${day}`)
 }
 
-function withPerformanceLog(step: (...args: unknown[]) => void) {
+function withPerformanceMeasurement<Ret extends unknown>(step: (...args: unknown[]) => Ret) {
   const start = performance.now()
-  step()
+  const ret = step()
   const end = performance.now()
-  console.info(`elapsed time: ${(end - start).toFixed(2)}ms\n`)
+  return [ret, `${(end - start).toFixed(2)}ms`] as const
 }
 
-const solver = yr[day]
+const runAllDays = day === 'all'
+const solvers = runAllDays ? yr : _.pick(yr, day)
 
-getInput(year, day)
-  .then(input => {
-    const solverSteps = solver.solve(input, debug)
+for (const [day, solver] of Object.entries(solvers)) {
+  const prefix = `${year} day ${day}`
 
-    withPerformanceLog(() => {
-      const parsedInput = solverSteps.next().value
-      console.info(`parsed input:\n${parsedInput}`)
+  getInput(year, day)
+    .then(input => {
+      const solverSteps = solver.solve(input, debug)
+
+      console.info('')
+  
+      const [parsedInput, ms0] = withPerformanceMeasurement(() => solverSteps.next().value)
+      if (!runAllDays) {
+        console.info(`[${ms0}]`, `${prefix} parsed input:\n${parsedInput}`)
+      }
+  
+      const [answer1, ms1] = withPerformanceMeasurement(() => solverSteps.next().value)
+      console.info(`[${ms1}]`, `${prefix} part 1 answer:\n${answer1}`)
+  
+      const [answer2, ms2] = withPerformanceMeasurement(() => solverSteps.next().value)
+      console.info(`[${ms2}]`, `${prefix} part 2 answer:\n${answer2}`)
     })
-
-    withPerformanceLog(() => {
-      const answer1 = solverSteps.next().value
-      console.info(`part 1 answer:\n${answer1}`)
-    })
-
-    withPerformanceLog(() => {
-      const answer2 = solverSteps.next().value
-      console.info(`part 2 answer:\n${answer2}`)
-    })
-  })
+}
