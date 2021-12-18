@@ -1,4 +1,13 @@
-import { parseInput, part1, part2 } from '../18'
+import { parseInput, add, format, part1, part2 } from '../18'
+
+test('2021 day 18 add', () => {
+  const [x, y, sum] = parseInput(`
+    [[[[4,3],4],4],[7,[[8,4],9]]]
+    [1,1]
+    [[[[0,7],4],[[7,8],[6,0]]],[8,1]]
+  `)
+  expect(add(x, y, true)).toEqual(sum)
+})
 
 const example = parseInput(`
 [[[0,[5,8]],[[1,7],[9,6]]],[[4,[1,2]],[[1,4],2]]]
@@ -17,6 +26,6 @@ test('2021 day 18 part 1', () => {
   expect(part1(example)).toBe(4140)
 })
 
-test.skip('2021 day 18 part 2', () => {
-  expect(part2(example)).toBe(112)
+test('2021 day 18 part 2', () => {
+  expect(part2(example)).toBe(3993)
 })
