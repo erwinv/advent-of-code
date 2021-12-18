@@ -27,7 +27,7 @@ export function parseInput(s: string): SnailfishNumber[] {
     })
 }
 
-function* traversePreorder(x: SnailfishNumber, depth = 0, parent?: SnailfishNumber, location?: 'left' | 'right')
+function* traverseInorder(x: SnailfishNumber, depth = 0, parent?: SnailfishNumber, location?: 'left' | 'right')
   : Generator<[
       parent: SnailfishNumber, location: 'left' | 'right', depth: number,
       grandparent?: SnailfishNumber, parentLocation?: 'left' | 'right'
@@ -38,20 +38,20 @@ function* traversePreorder(x: SnailfishNumber, depth = 0, parent?: SnailfishNumb
   if (_.isNumber(left)) {
     yield [x, 'left', depth + 1, parent, location]
   } else {
-    yield* traversePreorder(left, depth + 1, x, 'left')
+    yield* traverseInorder(left, depth + 1, x, 'left')
   }
 
   if (_.isNumber(right)) {
     yield [x, 'right', depth + 1, parent, location]
   } else {
-    yield* traversePreorder(right, depth + 1, x, 'right')
+    yield* traverseInorder(right, depth + 1, x, 'right')
   }
 }
 
 function incrementByAt(x: SnailfishNumber, increment: number, index: number) {
   if (index < 0) return
   let i = 0
-  for (const [parent, location] of traversePreorder(x)) {
+  for (const [parent, location] of traverseInorder(x)) {
     if (i === index) {
       const value = parent[location] as number
       parent[location] = value + increment
@@ -72,7 +72,7 @@ function reduce(x_: SnailfishNumber): SnailfishNumber {
   while (wasUpdated) {
     wasUpdated = false
     let i = 0
-    for (const [parent, location, depth, grandparent, parentLocation] of traversePreorder(x)) {
+    for (const [parent, location, depth, grandparent, parentLocation] of traverseInorder(x)) {
       if (location === 'left' && _.isNumber(parent.right) && depth >= 5) {
         // explode
         incrementByAt(x, parent.left as number, i - 1)
@@ -87,7 +87,7 @@ function reduce(x_: SnailfishNumber): SnailfishNumber {
     if (wasUpdated) continue
 
     i = 0
-    for (const [parent, location] of traversePreorder(x)) {
+    for (const [parent, location] of traverseInorder(x)) {
       if (parent[location] > 9) {
         // split
         const value = parent[location] as number
