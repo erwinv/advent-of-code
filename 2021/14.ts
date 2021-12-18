@@ -99,7 +99,8 @@ export function part2({template, insertionRules}: Input, debug = true) {
   return _.last(elementCountsAsc)! - _.first(elementCountsAsc)!
 }
 
-export function* solve(input: string, debug = false) {
+export function* solve(debug = false) {
+  const input: string = yield [__dirname, __filename]
   const data = parseInput(input)
   yield data
   yield part1(data, debug)

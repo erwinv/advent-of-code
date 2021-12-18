@@ -28,7 +28,7 @@ export function part1(data: Input, fuelCalculation: FuelCalculation = (x, y) => 
     }
   })
 
-  return _.min(fuelConsumptions.map(({ fuel }) => fuel))
+  return _.min(fuelConsumptions.map(({ fuel }) => fuel))!
 }
 
 export function part2(data: Input, debug = true) {
@@ -38,7 +38,8 @@ export function part2(data: Input, debug = true) {
   })
 }
 
-export function* solve(input: string, debug = false) {
+export function* solve(debug = false) {
+  const input: string = yield [__dirname, __filename]
   const data = parseInput(input)
   yield data
   yield part1(data, undefined, debug)

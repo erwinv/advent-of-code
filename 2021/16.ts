@@ -194,7 +194,7 @@ export function part1(data: Input, debug = true) {
   return sumVersions
 }
 
-export function part2(data: Input, debug = true) {
+export function part2(data: Input, debug = true): number {
   const packet = parseTransmission(data, debug)
   return foldRecursive(packet,
     ({ value }) => value,
@@ -212,7 +212,8 @@ export function part2(data: Input, debug = true) {
   )
 }
 
-export function* solve(input: string, debug = false) {
+export function* solve(debug = false) {
+  const input: string = yield [__dirname, __filename]
   const data = parseInput(input)
   yield data
   yield part1(data, debug)

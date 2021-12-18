@@ -145,7 +145,7 @@ class OceanTrench {
 
 export function part1(trench: OceanTrench, debug = true) {
   const velocities = trench.probeInitialVelocitiesThatHitTarget(debug)
-  return _.max(velocities.map(({ maxY }) => maxY))
+  return _.max(velocities.map(({ maxY }) => maxY))!
 }
 
 export function part2(trench: OceanTrench, debug = true) {
@@ -161,7 +161,8 @@ export function part2_1(trench: OceanTrench, debug = true) {
   return velocities.map(({vx, vy}) => `${vx},${vy}`)
 }
 
-export function* solve(input: string, debug = false) {
+export function* solve(debug = false) {
+  const input: string = yield [__dirname, __filename]
   const data = parseInput(input)
   yield data
   yield part1(data, debug)

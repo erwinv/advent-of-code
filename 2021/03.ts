@@ -73,7 +73,8 @@ export function part2(data: Input, debug = true) {
   return parseInt(o2genRating, 2) * parseInt(co2scrubRating, 2)
 }
 
-export function* solve(input: string, debug = false) {
+export function* solve(debug = false) {
+  const input: string = yield [__dirname, __filename]
   const data = parseInput(input)
   yield data
   yield part1(data, debug)
