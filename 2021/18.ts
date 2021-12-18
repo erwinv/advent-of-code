@@ -72,7 +72,8 @@ export function add(a: SnailfishNumber, b: SnailfishNumber, debug = false): Snai
   return reduce(sum, debug)
 }
 
-function reduce(x: SnailfishNumber, debug = false): SnailfishNumber {
+function reduce(x_: SnailfishNumber, debug = false): SnailfishNumber {
+  const x = _.cloneDeep(x_)
   let wasUpdated = true
   while (wasUpdated) {
     wasUpdated = false
@@ -126,7 +127,7 @@ export function format(x: SnailfishNumber | number): string {
 }
 
 export function part1(numbers: SnailfishNumber[], debug = true) {
-  const sum = _.cloneDeep(numbers).reduce((x, y) => add(x, y, debug))
+  const sum = numbers.reduce((x, y) => add(x, y, debug))
   if (debug) {
     console.info('sum:', format(sum))
   }
@@ -138,7 +139,7 @@ export function part2(numbers: SnailfishNumber[], debug = true) {
   for (const [x, y] of pairPermutations(numbers)) {
     if (_.isEqual(x, y)) continue
 
-    const mag = magnitude(add(_.cloneDeep(x), _.cloneDeep(y), debug))
+    const mag = magnitude(add(x, y, debug))
     if (mag > largestMagnitude) {
       if (debug) {
         console.info(format(x), '+', format(y), `magnitude: ${mag}`)
