@@ -42,7 +42,7 @@ function* traversePreorder(x: SnailfishNumber, depth = 0, parent?: SnailfishNumb
   }
 
   if (_.isNumber(right)) {
-    yield [x, 'right', depth + 1]
+    yield [x, 'right', depth + 1, parent, location]
   } else {
     yield* traversePreorder(right, depth + 1, x, 'right')
   }
@@ -61,19 +61,13 @@ function incrementByAt(x: SnailfishNumber, increment: number, index: number) {
   }
 }
 
-export function add(a: SnailfishNumber, b: SnailfishNumber, debug = false): SnailfishNumber {
-  const sum = {
-    left: a,
-    right: b,
-  }
-  if (debug) {
-    console.info('after addition:', format(sum))
-  }
-  return reduce(sum, debug)
+export function add(x: SnailfishNumber, y: SnailfishNumber): SnailfishNumber {
+  return reduce({ left: x, right: y })
 }
 
-function reduce(x_: SnailfishNumber, debug = false): SnailfishNumber {
+function reduce(x_: SnailfishNumber): SnailfishNumber {
   const x = _.cloneDeep(x_)
+
   let wasUpdated = true
   while (wasUpdated) {
     wasUpdated = false
@@ -84,9 +78,6 @@ function reduce(x_: SnailfishNumber, debug = false): SnailfishNumber {
         incrementByAt(x, parent.left as number, i - 1)
         incrementByAt(x, parent.right as number, i + 2)
         grandparent![parentLocation!] = 0
-        if (debug) {
-          console.info('after explode:', format(x))
-        }
         wasUpdated = true
         break
       }
@@ -104,15 +95,13 @@ function reduce(x_: SnailfishNumber, debug = false): SnailfishNumber {
           left: Math.floor(value / 2),
           right: Math.ceil(value / 2),
         }
-        if (debug) {
-          console.info('after split:', format(x))
-        }
         wasUpdated = true
         break
       }
       i++
     }
   }
+
   return x
 }
 
@@ -127,7 +116,7 @@ export function format(x: SnailfishNumber | number): string {
 }
 
 export function part1(numbers: SnailfishNumber[], debug = true) {
-  const sum = numbers.reduce((x, y) => add(x, y, debug))
+  const sum = numbers.reduce(add)
   if (debug) {
     console.info('sum:', format(sum))
   }
@@ -139,10 +128,11 @@ export function part2(numbers: SnailfishNumber[], debug = true) {
   for (const [x, y] of pairPermutations(numbers)) {
     if (_.isEqual(x, y)) continue
 
-    const mag = magnitude(add(x, y, debug))
+    const sum = add(x, y)
+    const mag = magnitude(sum)
     if (mag > largestMagnitude) {
       if (debug) {
-        console.info(format(x), '+', format(y), `magnitude: ${mag}`)
+        console.info(' ', format(x), '\n+', format(y), '\n=', format(sum), `\nmagnitude: ${mag}`)
       }
       largestMagnitude = mag
     }
