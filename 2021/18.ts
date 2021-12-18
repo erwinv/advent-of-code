@@ -131,7 +131,6 @@ export function part1(numbers: SnailfishNumber[], debug = true) {
     console.info('sum:', format(sum))
   }
   return magnitude(sum)
-  return NaN
 }
 
 export function part2(numbers: SnailfishNumber[], debug = true) {
