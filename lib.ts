@@ -51,16 +51,28 @@ export function slidingPairs<T>(xs: T[]): Iterable<readonly [T, T]> {
   return generator()
 }
 
-export function pairPermutations<T>(xs: T[]): Iterable<readonly [T, T]> {
-  const generator = function*() {
-    for (const x1 of xs) {
-      for (const x2 of xs) {
-        yield [x1, x2] as const
-      }
+export function* pairPermutations<T>(xs: T[], excludeSelfPairings = false): Iterable<readonly [T, T]> {
+  for (const [i1, x1] of xs.entries()) {
+    for (const [i2, x2] of xs.entries()) {
+      if (excludeSelfPairings && i1 === i2)
+        continue
+      yield [x1, x2] as const
     }
   }
+}
 
-  return generator()
+export function* combinations<T>(xs_: T[], size: number): Iterable<T[]> {
+  const xs = [...xs_]
+  if (size >= xs_.length) {
+    return xs
+  }
+
+  for (const [i1, x1] of xs_.entries()) {
+    xs.splice(i1, 1)
+    for (const subCombination of combinations(xs, size - 1)) {
+      yield [x1, ...subCombination]
+    }
+  }
 }
 
 export class PriorityQueue<T> {

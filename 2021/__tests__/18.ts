@@ -1,4 +1,4 @@
-import { parseInput, add, format, part1, part2 } from '../18'
+import { parseInput, add, part1, part2 } from '../18'
 
 test('2021 day 18 add', () => {
   const [x, y, sum] = parseInput(`

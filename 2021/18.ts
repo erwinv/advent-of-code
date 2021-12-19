@@ -125,9 +125,7 @@ export function part1(numbers: SnailfishNumber[], debug = true) {
 
 export function part2(numbers: SnailfishNumber[], debug = true) {
   let largestMagnitude = -Infinity
-  for (const [x, y] of pairPermutations(numbers)) {
-    if (_.isEqual(x, y)) continue
-
+  for (const [x, y] of pairPermutations(numbers, true)) {
     const sum = add(x, y)
     const mag = magnitude(sum)
     if (mag > largestMagnitude) {
