@@ -6,7 +6,7 @@ test('2021 day 18 add', () => {
     [1,1]
     [[[[0,7],4],[[7,8],[6,0]]],[8,1]]
   `)
-  expect(add(x, y, true)).toEqual(sum)
+  expect(add(x, y)).toEqual(sum)
 })
 
 const example = parseInput(`
