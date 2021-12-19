@@ -67,7 +67,7 @@ export function* combinations<T>(xs_: T[], size: number): Iterable<T[]> {
     return xs
   }
 
-  for (const [i1, x1] of xs_.entries()) {
+  for (const [i1, x1] of xs.entries()) {
     xs.splice(i1, 1)
     for (const subCombination of combinations(xs, size - 1)) {
       yield [x1, ...subCombination]
