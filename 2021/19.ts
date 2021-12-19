@@ -60,7 +60,7 @@ interface ScannerReport {
 }
 
 function reconstructRegion(reports: ScannerReport[]) {
-  const pairedReportsIds: number[] = []
+  const pairedReportsIds: Set<number> = new Set()
   const overlappingPairs: Array<{
     left: number
     right: number
@@ -68,12 +68,13 @@ function reconstructRegion(reports: ScannerReport[]) {
   }> = []
 
   for (const [report1, report2] of pairPermutations(reports, true)) {
-    if (pairedReportsIds.includes(report1.id) && pairedReportsIds.includes(report2.id))
+    if (pairedReportsIds.has(report1.id) && pairedReportsIds.has(report2.id))
       continue
 
     const transformation = tryToOverlap(report1, report2)
     if (transformation) {
-      pairedReportsIds.push(report1.id, report2.id)
+      pairedReportsIds.add(report1.id)
+      pairedReportsIds.add(report2.id)
       overlappingPairs.push({left: report1.id, right: report2.id, transformation})
     }
   }
