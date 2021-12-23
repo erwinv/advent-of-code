@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 export abstract class MappedSet<T, U> {
   abstract map(value: T): U
   abstract inverseMap(value: U): T
@@ -61,16 +63,33 @@ export function* pairPermutations<T>(xs: T[], excludeSelfPairings = false): Iter
   }
 }
 
-export function* combinations<T>(xs_: T[], size: number): Iterable<T[]> {
-  const xs = [...xs_]
-  if (size >= xs_.length) {
-    return xs
+export function* combinations<T>(xs: T[]): Iterable<T[]> {
+  if (_.isEmpty(xs)) {
+    return yield []
   }
 
-  for (const [i1, x1] of xs.entries()) {
-    xs.splice(i1, 1)
-    for (const subCombination of combinations(xs, size - 1)) {
-      yield [x1, ...subCombination]
+  const x = _.head(xs)!
+  const rest = _.tail(xs)
+
+  for (const subCombination of combinations(rest)) {
+    yield subCombination
+    yield [x, ...subCombination]
+  }
+}
+
+export function* chooseK<T>(xs: T[], k: number): Iterable<T[]> {
+  if (k === 0) {
+    return yield []
+  }
+  if (k >= xs.length) {
+    return yield xs
+  }
+
+  for (const [i, x] of xs.entries()) {
+    for (const subCombination of chooseK(xs.slice(i + 1), k - 1)) {
+      if (subCombination.length === k - 1) {
+        yield [x, ...subCombination]
+      }
     }
   }
 }

@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { combinations, pairPermutations } from '../lib'
+import { chooseK, pairPermutations } from '../lib'
 
 export function parseInput(s: string): ScannerReport[] {
   const REPORT_HEADER = /--- scanner (\d+) ---/
@@ -81,8 +81,8 @@ function reconstructRegion(reports: ScannerReport[]) {
 }
 
 function tryToOverlap(a: ScannerReport, b: ScannerReport): Transformation | undefined {
-  for (const dozenBeaconsA of combinations(a.beacons, 12)) {
-    for (const dozenBeaconsB of combinations(b.beacons, 12)) {
+  for (const dozenBeaconsA of chooseK(a.beacons, 12)) {
+    for (const dozenBeaconsB of chooseK(b.beacons, 12)) {
       for (const [rotatedB, rotation] of orientations(dozenBeaconsB)) {
         const translation = tryToAlignByTranslation(dozenBeaconsA, rotatedB)
         if (translation) {
