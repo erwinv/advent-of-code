@@ -18,7 +18,8 @@
   "include": [
     "*.ts",
     "2021/**/*",
-    "test/**/*"
+    "test/**/*",
+    "scripts/**/*"
   ],
   "exclude": [
     "build/**/*"

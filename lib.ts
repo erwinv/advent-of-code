@@ -68,12 +68,9 @@ export function* combinations<T>(xs: T[]): Iterable<T[]> {
     return yield []
   }
 
-  const x = _.head(xs)!
-  const rest = _.tail(xs)
-
-  for (const subCombination of combinations(rest)) {
+  for (const subCombination of combinations(xs.slice(1))) {
     yield subCombination
-    yield [x, ...subCombination]
+    yield [xs.at(0)!, ...subCombination]
   }
 }
 
