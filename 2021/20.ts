@@ -28,11 +28,10 @@ export function parseInput(s: string): Input {
   return {enhancementAlgorithm, image}
 }
 
-function format(image: Pixel[][], padding = 5) {
+function format(image: Pixel[][], padding = 2) {
   const darkPixel = chalk.dim('.')
   const lightPixel = chalk.whiteBright('#')
 
-  const length = image.length
   const width = image[0].length
 
   const topPadding = _.range(padding)
@@ -45,27 +44,59 @@ function format(image: Pixel[][], padding = 5) {
     .join('\n')
   const bottomPadding = topPadding
 
-  let out = topPadding
-  // TODO left, right padding
-  out += image.map(row => {
+  let out = topPadding + '\n'
+
+  const margin = Array(padding).fill(darkPixel).join('')
+
+  out += image
+    .map(row => 
       row.map(p => p === 0
         ? darkPixel
         : lightPixel
       )
       .join('')
-    })
+    )
+    .map(row => `${margin}${row}${margin}`)
     .join('\n')
 
-  return out + bottomPadding
+  return out + '\n' + bottomPadding
+}
+
+function enhance(image: Pixel[][], algo: Pixel[]): Pixel[][] {
+  // identify infinity border, and infinity value (light or dark)
+  // infinity can either be light/dark depending on enhancement algorithm
+  // in the example, infinity is always dark (all neighbors dark -> dark)
+  // in the actual input, infinity flips between light and dark on every enhance step:
+  // - all neighbors dark -> light up
+  // - all neighbors lit -> darken
+
+  let enhancedImage = image // pad 1 pixel on all sides
+  return enhancedImage
 }
 
 export function part1(data: Input, debug = true) {
-  console.info(format(data.image))
-  return data
+  const {image, enhancementAlgorithm} = data
+  if (debug) {
+    console.info(format(image))
+  }
+
+  let enhancedImage = image
+  for (const __ of _.range(2)) {
+    enhancedImage = enhance(enhancedImage, enhancementAlgorithm)
+    if (debug) {
+      console.info(format(enhancedImage))
+    }
+  }
+
+  const numLit = enhancedImage.flat().filter(p => p > 0).length
+
+  return numLit
 }
 
 export function part2(data: Input, debug = true) {
-  console.info(format(data.image))
+  if (debug) {
+    console.info(format(data.image))
+  }
   return data
 }
 

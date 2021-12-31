@@ -16,8 +16,8 @@ const example = parseInput(`
 ..###
 `)
 
-test('2021 day 20 part 1', () => {
-  expect(part1(example)).toBe(``)
+test.only('2021 day 20 part 1', () => {
+  expect(part1(example)).toBe(35)
 })
 
 test('2021 day 20 part 2', () => {
